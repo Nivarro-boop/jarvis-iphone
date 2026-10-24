@@ -1,13 +1,14 @@
 import { fetchCatalog, type AppEntry, type Catalog, type Skill } from '../market/catalog'
 import { latestRelease } from '../market/releases'
 import { fetchRemote } from '../update'
+import { renderQr } from '../site/qr'
 import './store.css'
 
 /**
  * James Store — ein Store wie Epic oder der App Store, nur ohne App Store.
  *
- * „Holen“ lädt für Web-Apps ein Installationsprofil (siehe scripts/webclip.mjs),
- * das ein eigenes Symbol auf den Home-Bildschirm legt; für Windows den neuesten
+ * Web-Apps öffnen eine Anleitung zum Home-Bildschirm; Profile sind optional.
+ * Für Windows öffnet der Store den neuesten
  * Installer aus den GitHub-Releases; für die Apple Watch die Anleitung zum
  * Siri-Kurzbefehl. Katalog und Versionen kommen live aus GitHub.
  */
@@ -15,7 +16,6 @@ import './store.css'
 const base = import.meta.env.BASE_URL
 const appRoot = new URL(base, location.origin).href
 /** Profile nur von Netlify: GitHub Pages liefert sie mit falschem Dateityp aus. */
-const PROFILES = 'https://james-marktplatz.netlify.app/jarvis-iphone/'
 const LIBRARY = 'james.store.library'
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T
@@ -42,7 +42,9 @@ const versions = new Map<string, string>()
 
 function library(): Record<string, number> {
   try {
-    return JSON.parse(localStorage.getItem(LIBRARY) ?? '{}') as Record<string, number>
+    const value: unknown = JSON.parse(localStorage.getItem(LIBRARY) ?? '{}')
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return {}
+    return Object.fromEntries(Object.entries(value).filter(([id, at]) => /^[a-z0-9-]{2,41}$/.test(id) && typeof at === 'number' && Number.isFinite(at)))
   } catch {
     return {}
   }
@@ -74,16 +76,13 @@ interface Action {
   label: string
   href: string
   primary?: boolean
-  /** Zeigt nach dem Tippen die drei Schritte fürs Profil. */
-  profile?: boolean
   external?: boolean
 }
 
 function actionsFor(app: AppEntry): Action[] {
   const actions: Action[] = []
   if (app.kind === 'self') {
-    if (app.profile && ios) actions.push({ label: 'Holen', href: `${PROFILES}${app.profile}`, primary: true, profile: true })
-    else actions.push({ label: ios ? 'Holen' : 'Am iPhone holen', href: `${appRoot}installieren/`, primary: true })
+    actions.push({ label: ios ? 'Zum Home-Bildschirm' : 'Am iPhone einrichten', href: `${appRoot}installieren/`, primary: true })
     actions.push({ label: 'Im Browser öffnen', href: appRoot })
   } else if (app.kind === 'guide' && app.url) {
     actions.push({ label: 'Einrichten', href: `${appRoot}${app.url}`, primary: true })
@@ -174,21 +173,27 @@ async function renderNews(): Promise<void> {
 // Detailseite
 // ─────────────────────────────────────────────────────────────
 
+let detailRevision = 0
 const detail = $<HTMLDialogElement>('detail')
+detail.addEventListener('close', () => { detailRevision++ })
 $('detail-close').addEventListener('click', () => detail.close())
 
 function openDetail(app: AppEntry): void {
+  const revision = ++detailRevision
+  $('detail-status').textContent = ''
+  $('detail-qr').hidden = ios
+  if (!ios) renderQr($('app-qr'), app.kind === 'guide' ? new URL(app.url!, appRoot).href : `${appRoot}store/?app=${encodeURIComponent(app.id)}`)
   $('detail-hero').style.setProperty('--accent', app.accent ?? '#2f86ef')
   $<HTMLImageElement>('detail-icon').src = iconOf(app)
   $('detail-name').textContent = app.name
   $('detail-tagline').textContent = app.tagline ?? ''
   $('detail-chips').replaceChildren(
     el('span', { className: 'chip', textContent: app.platform }),
+    el('span', { className: 'chip', textContent: app.kind === 'self' ? 'Web-App' : app.kind === 'guide' ? 'Kurzbefehl-Anleitung' : 'Windows-Installer' }),
     el('span', { className: 'chip', textContent: 'Kostenlos' }),
     ...(app.watch ? [el('span', { className: 'chip', textContent: 'Apple Watch' })] : [])
   )
   $('detail-text').textContent = app.description
-  $('detail-howto').hidden = true
   $('detail-actions').replaceChildren(
     ...actionsFor(app).map(action => {
       const link = el('a', {
@@ -199,7 +204,6 @@ function openDetail(app: AppEntry): void {
       })
       link.addEventListener('click', () => {
         if (action.primary) addToLibrary(app.id)
-        if (action.profile) $('detail-howto').hidden = false
       })
       return link
     })
@@ -212,6 +216,7 @@ function openDetail(app: AppEntry): void {
     void latestRelease(app.repo, app.asset)
       .then(release => {
         versions.set(app.id, release.version)
+        if (revision !== detailRevision || !detail.open) return
         facts.append(el('dt', { textContent: 'Version' }), el('dd', { textContent: `${release.version} · ${dateDe(release.date)}` }))
         if (release.sizeMb) facts.append(el('dt', { textContent: 'Größe' }), el('dd', { textContent: `${release.sizeMb} MB` }))
         const primary = $('detail-actions').querySelector<HTMLAnchorElement>('.get')
@@ -245,6 +250,7 @@ function renderSearch(): void {
       row(s.name, `Fähigkeit · ${s.category}`, null, el('a', { className: 'get small', href: `${appRoot}#skill=${encodeURIComponent(s.id)}`, textContent: 'Hinzufügen' }))
     )
   )
+  if (!apps.length && !skills.length) $('search-results').append(el('p', { className: 'empty', textContent: 'Nichts gefunden. Versuche iPhone, Watch oder eine Fähigkeit.' }))
 }
 $('search').addEventListener('input', renderSearch)
 
@@ -261,7 +267,7 @@ function renderLibrary(): void {
       })
       const actions = el('div', { className: 'row-actions' }, getButton(app, true), remove)
       const version = versions.get(app.id)
-      return row(app.name, `${app.platform}${version ? ` · ${version} · aktuell` : ''}`, iconOf(app), actions, () => openDetail(app))
+      return row(app.name, `${app.platform}${version ? ` · ${version} verfügbar` : ''}`, iconOf(app), actions, () => openDetail(app))
     })
   )
   $('library-empty').hidden = apps.length > 0
@@ -273,7 +279,10 @@ function renderLibrary(): void {
 
 const tabs = document.querySelectorAll<HTMLButtonElement>('.tabbar button')
 function show(view: string): void {
-  for (const tab of tabs) tab.toggleAttribute('aria-current', tab.dataset.view === view)
+  for (const tab of tabs) {
+    if (tab.dataset.view === view) tab.setAttribute('aria-current', 'page')
+    else tab.removeAttribute('aria-current')
+  }
   for (const name of ['discover', 'search', 'library']) $(`view-${name}`).hidden = name !== view
   if (view === 'search') {
     renderSearch()
