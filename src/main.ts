@@ -8,7 +8,7 @@ import { Speaker } from './speech/speak'
 import { loadHistory, loadMemory, loadSettings, saveHistory, type Settings } from './store'
 import { busyLabel, runTool, toolSpecs } from './tools'
 import { Orb, type OrbState } from './ui/orb'
-import { skillsPrompt } from './market/installed'
+import { loadInstalled, skillsPrompt } from './market/installed'
 import { setupMarket } from './ui/market'
 import { setupSettings } from './ui/settings'
 import { Timers } from './ui/timers'
@@ -28,12 +28,14 @@ const ui = {
   text: $<HTMLInputElement>('text'),
   talk: $<HTMLButtonElement>('talk'),
   orbButton: $<HTMLButtonElement>('orb-button'),
-  install: $('install')
+  install: $('install'),
+  chips: $('chips')
 }
 
 let settings: Settings = loadSettings()
 let history: Message[] = loadHistory()
 let turn: AbortController | null = null
+let lastQuestion = ''
 let state: OrbState = 'idle'
 /** Hat der Nutzer seit dem Start schon etwas getan? Dann kein stilles Neuladen mehr. */
 let touched = false
@@ -63,6 +65,39 @@ function setState(next: OrbState, label?: string): void {
   ui.status.textContent = label ?? STATUS[next]
   orb.set(next)
   ui.orbButton.setAttribute('aria-label', next === 'idle' || next === 'error' ? 'Sprechen' : 'Stopp')
+  renderChips()
+}
+
+const STARTERS = [
+  'Wie wird das Wetter morgen?',
+  'Stell einen Timer für zehn Minuten',
+  'Erzähl mir etwas über den Mond',
+  'Was kann ich heute Abend kochen?',
+  'Merk dir, dass ich Kaffee schwarz trinke'
+]
+
+/** Antippbare Sätze: zum Einstieg Beispiele, nach einem Fehler „Nochmal“. */
+function renderChips(): void {
+  const chips: { label: string; retry?: boolean; run(): void }[] = []
+  if (state === 'error' && lastQuestion) {
+    chips.push({ label: 'Nochmal versuchen', retry: true, run: () => void ask(lastQuestion) })
+  } else if (state === 'idle' && !ui.you.textContent && !needsSetup()) {
+    const fromSkills = loadInstalled().map(s => s.examples[0]).filter(Boolean)
+    for (const label of [...new Set([...fromSkills, ...STARTERS])].slice(0, 4)) chips.push({ label, run: () => void ask(label) })
+  }
+  ui.chips.replaceChildren(
+    ...chips.map(chip => {
+      const button = document.createElement('button')
+      button.type = 'button'
+      button.className = chip.retry ? 'suggestion retry' : 'suggestion'
+      button.textContent = chip.label
+      button.addEventListener('click', () => {
+        speaker.unlock()
+        chip.run()
+      })
+      return button
+    })
+  )
 }
 
 function needsSetup(): boolean {
@@ -78,6 +113,7 @@ function refreshSetup(): void {
   ui.hint.textContent = missing ? '' : listener.supported ? 'Tippe auf die Kugel und sprich.' : 'Schreib James unten eine Nachricht.'
   if (missing) setState('setup')
   else if (state === 'setup') setState('idle')
+  else renderChips()
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -116,6 +152,7 @@ async function ask(question: string): Promise<void> {
   if (!text) return
   if (needsSetup()) return openSettings()
   stopAll()
+  lastQuestion = text
   const controller = new AbortController()
   turn = controller
   ui.you.textContent = text
@@ -252,10 +289,17 @@ $('welcome-setup').addEventListener('click', openSettings)
 $('open-settings').addEventListener('click', openSettings)
 
 // Der Systemprompt wird vor jeder Frage neu gebaut; Änderungen wirken also sofort.
-const market = setupMarket({ onChanged: () => undefined })
-$('open-market').addEventListener('click', market.open)
+const market = setupMarket({ onChanged: () => renderChips() })
+$('open-market').addEventListener('click', () => market.open())
 // Installierte Fähigkeiten auch ohne Öffnen des Marktplatzes aktuell halten.
 void market.refresh()
+
+// Von der Marktplatz-Website: …/jarvis-iphone/#skill=koch
+const linked = /^#skill=([a-z0-9-]{2,41})$/.exec(location.hash)?.[1]
+if (linked) {
+  window.history.replaceState(null, '', location.pathname + location.search)
+  market.open(linked)
+}
 
 const historyDialog = $<HTMLDialogElement>('history')
 $('open-history').addEventListener('click', () => {

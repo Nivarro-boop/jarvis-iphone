@@ -49,7 +49,9 @@ Worauf Apple bei so einer App schaut:
 - **Mindestfunktion (Richtlinie 4.2):** Eine reine Webseite in einer Hülle wird
   oft abgelehnt. Native Spracherkennung, Vorlesen, Mitteilungen und Siri-Kurzbefehle
   machen den Unterschied.
-- **Datenschutz:** Datenschutzerklärung als Webseite, Angaben im „App Privacy“-
+- **Datenschutz:** Datenschutzerklärung als Webseite (vorhanden:
+  https://nivarro-boop.github.io/jarvis-iphone/datenschutz/ – vor dem Verkauf
+  um Name und Anschrift des Anbieters ergänzen), Angaben im „App Privacy“-
   Formular (Audio geht an Apple, Text an den KI-Anbieter).
 - **Bezahlen (3.1.1):** Wird ein Abo verkauft, muss es über Apples In-App-Kauf
   laufen (15–30 % an Apple). Eigene Schlüssel der Nutzer (wie jetzt) sind

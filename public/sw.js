@@ -5,7 +5,7 @@
  * Strategie: Seiten zuerst aus dem Netz (damit Updates ankommen), sonst aus
  * dem Zwischenspeicher; Dateien mit Hash im Namen aus dem Zwischenspeicher.
  */
-const CACHE = 'james-v2'
+const CACHE = 'james-v3'
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(['./', 'manifest.webmanifest', 'icons/apple-touch-icon.png'])))
@@ -29,11 +29,15 @@ self.addEventListener('fetch', event => {
     event.respondWith(
       fetch(request)
         .then(response => {
-          const copy = response.clone()
-          caches.open(CACHE).then(cache => cache.put('./', copy))
+          // Jede Seite unter ihrer eigenen Adresse, sonst landet der
+          // Marktplatz offline anstelle der App.
+          if (response.ok) {
+            const copy = response.clone()
+            caches.open(CACHE).then(cache => cache.put(request, copy))
+          }
           return response
         })
-        .catch(() => caches.match('./'))
+        .catch(() => caches.match(request, { ignoreSearch: true }).then(hit => hit || caches.match('./')))
     )
     return
   }

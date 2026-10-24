@@ -11,6 +11,11 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="James" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="James – Sprachassistent fürs iPhone" />
+    <meta property="og:description" content="Kugel antippen, sprechen, James antwortet. Ohne App Store, immer aktuell." />
+    <meta property="og:image" content="https://nivarro-boop.github.io/jarvis-iphone/icons/icon-512-opaque.png" />
+    <meta name="twitter:card" content="summary" />
     <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
     <link rel="icon" type="image/png" href="icons/icon-192.png" />
     <link rel="manifest" href="manifest.webmanifest" />
@@ -46,6 +51,8 @@
         <p class="you" id="you"></p>
         <p class="answer" id="answer"></p>
       </section>
+
+      <div class="suggestions" id="chips" role="group" aria-label="Vorschläge"></div>
 
       <section class="welcome" id="welcome" hidden>
         <h1>Guten Tag. Ich bin James.</h1>

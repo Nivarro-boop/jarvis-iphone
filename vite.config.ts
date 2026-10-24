@@ -1,5 +1,6 @@
 import { execSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
 import { defineConfig, type Plugin } from 'vitest/config'
 
 /**
@@ -44,6 +45,17 @@ export default defineConfig({
   base: process.env.PAGES_BASE ?? '/',
   define: { __BUILD__: JSON.stringify(build) },
   plugins: [versionFile()],
-  build: { target: 'safari16', sourcemap: true },
+  build: {
+    target: 'safari16',
+    sourcemap: true,
+    // App, Marktplatz-Website und Datenschutz – ein Build, ein Deploy.
+    rollupOptions: {
+      input: {
+        app: fileURLToPath(new URL('./index.html', import.meta.url)),
+        marktplatz: fileURLToPath(new URL('./marktplatz/index.html', import.meta.url)),
+        datenschutz: fileURLToPath(new URL('./datenschutz/index.html', import.meta.url))
+      }
+    }
+  },
   test: { environment: 'jsdom' }
 })

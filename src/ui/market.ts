@@ -19,7 +19,7 @@ const dateDe = (iso: string) => {
  * jedem Öffnen frisch von GitHub Pages und zieht installierte Fähigkeiten
  * dabei gleich auf die neueste Fassung.
  */
-export function setupMarket(options: { onChanged(): void }): { open(): void; refresh(): Promise<void> } {
+export function setupMarket(options: { onChanged(): void }): { open(focus?: string): void; refresh(): Promise<void> } {
   const dialog = document.getElementById('market') as HTMLDialogElement
   const status = document.getElementById('market-status') as HTMLElement
   const panes = {
@@ -28,6 +28,11 @@ export function setupMarket(options: { onChanged(): void }): { open(): void; ref
     news: document.getElementById('market-news') as HTMLElement
   }
   let catalog: Catalog | null = null
+  /** Fähigkeit, die nach dem Laden hervorgehoben wird (Link von der Website). */
+  let focus: string | null = null
+
+  // Die Hervorhebung gilt, bis das Blatt zugeht — der Katalog kann zweimal ankommen.
+  dialog.addEventListener('close', () => (focus = null))
 
   dialog.addEventListener('change', event => {
     const target = event.target as HTMLInputElement
@@ -66,14 +71,16 @@ export function setupMarket(options: { onChanged(): void }): { open(): void; ref
       options.onChanged()
       renderSkills()
     })
-    return el(
+    const card = el(
       'article',
-      { className: 'card' },
+      { className: skill.id === focus ? 'card focus' : 'card' },
       el('div', { className: 'card-head' }, el('h3', { textContent: skill.name }), el('span', { className: local ? 'chip on' : 'chip', textContent: local ? `installiert · ${local.version}` : `v${skill.version}` })),
       el('p', { textContent: skill.description }),
       el('ul', { className: 'examples' }, ...skill.examples.slice(0, 3).map(e => el('li', { textContent: e }))),
       el('div', { className: 'card-actions' }, action)
     )
+    card.dataset.skill = skill.id
+    return card
   }
 
   function renderApps(): void {
@@ -144,12 +151,20 @@ export function setupMarket(options: { onChanged(): void }): { open(): void; ref
     if (dialog.open) {
       renderSkills()
       renderApps()
+      if (focus) {
+        const wanted = catalog?.skills.find(s => s.id === focus)
+        const card = panes.skills.querySelector<HTMLElement>(`[data-skill="${focus}"]`)
+        if (!wanted) setStatus('Diese Fähigkeit gibt es nicht mehr im Marktplatz.', 'bad')
+        else if (!loadInstalled().some(s => s.id === wanted.id)) setStatus(`„${wanted.name}“ – zum Installieren auf „Installieren“ tippen.`)
+        card?.scrollIntoView({ block: 'center' })
+      }
     }
   }
 
   return {
     refresh,
-    open() {
+    open(target?: string) {
+      focus = target ?? null
       setStatus('')
       renderSkills()
       renderNews()

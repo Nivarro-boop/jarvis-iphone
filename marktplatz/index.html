@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>James Marktplatz</title>
+    <meta name="description" content="Apps und Fähigkeiten für James, den persönlichen Sprachassistenten für iPhone und Windows. Immer in der neuesten Fassung aus GitHub." />
+    <meta name="theme-color" content="#05070b" />
+    <meta name="color-scheme" content="dark" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="James Marktplatz" />
+    <meta property="og:description" content="Apps und Fähigkeiten für James – Sprachassistent für iPhone und Windows." />
+    <meta property="og:image" content="https://nivarro-boop.github.io/jarvis-iphone/icons/icon-512-opaque.png" />
+    <meta property="og:url" content="https://nivarro-boop.github.io/jarvis-iphone/marktplatz/" />
+    <meta name="twitter:card" content="summary" />
+    <link rel="icon" type="image/png" href="../icons/icon-192.png" />
+    <link rel="apple-touch-icon" href="../icons/apple-touch-icon.png" />
+  </head>
+  <body class="site">
+    <a class="skip" href="#inhalt">Zum Inhalt</a>
+    <header class="nav">
+      <a class="brand" href="./" aria-label="James Marktplatz, Startseite">
+        <img src="../icons/icon-192.png" alt="" width="32" height="32" />
+        <span>James <em>Marktplatz</em></span>
+      </a>
+      <nav aria-label="Bereiche">
+        <a href="#apps">Apps</a>
+        <a href="#faehigkeiten">Fähigkeiten</a>
+        <a href="#neu">Neu</a>
+        <a href="https://github.com/Nivarro-boop/jarvis-iphone" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+    </header>
+
+    <main id="inhalt">
+      <section class="hero">
+        <div class="hero-text">
+          <p class="eyebrow" id="hero-version">Immer die neueste Fassung, direkt aus GitHub</p>
+          <h1>Dein Assistent.<br />Auf iPhone und PC.</h1>
+          <p class="lead">James hört zu, denkt mit und antwortet mit Stimme. Am iPhone ohne Installation aus dem App Store, am PC mit voller Kontrolle über Programme, Mails und Browser.</p>
+          <div class="cta">
+            <a class="button primary" href="../">James am iPhone öffnen</a>
+            <a class="button" id="hero-windows" href="https://github.com/Nivarro-boop/James-Jarvis/releases/latest" target="_blank" rel="noopener">Für Windows laden</a>
+          </div>
+          <p class="fine">Am iPhone: Seite in Safari öffnen → Teilen → <strong>Zum Home-Bildschirm</strong>.</p>
+        </div>
+        <div class="hero-visual">
+          <canvas id="orb" aria-hidden="true"></canvas>
+          <figure class="qr" id="qr-card">
+            <div id="qr" role="img" aria-label="QR-Code zur iPhone-App"></div>
+            <figcaption>Mit der iPhone-Kamera scannen</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="block" id="apps" aria-labelledby="apps-title">
+        <div class="block-head">
+          <h2 id="apps-title">Apps</h2>
+          <p>Versionen kommen live aus den GitHub-Releases.</p>
+        </div>
+        <div class="grid apps" id="apps-list"></div>
+      </section>
+
+      <section class="block" id="faehigkeiten" aria-labelledby="skills-title">
+        <div class="block-head">
+          <h2 id="skills-title">Fähigkeiten</h2>
+          <p>Mit einem Tipp in James installieren. Sie aktualisieren sich selbst.</p>
+        </div>
+        <div class="filters">
+          <input id="search" type="search" placeholder="Fähigkeit suchen …" aria-label="Fähigkeit suchen" />
+          <div class="chips" id="categories" role="group" aria-label="Kategorie"></div>
+        </div>
+        <div class="grid skills" id="skills-list" aria-live="polite"></div>
+        <p class="empty" id="skills-empty" hidden>Nichts gefunden. <a href="#mitmachen">Schlag eine Fähigkeit vor.</a></p>
+      </section>
+
+      <section class="block" id="neu" aria-labelledby="news-title">
+        <div class="block-head">
+          <h2 id="news-title">Neu</h2>
+          <p>Jede Änderung auf GitHub landet nach etwa einer Minute bei allen.</p>
+        </div>
+        <ol class="timeline" id="news-list"></ol>
+      </section>
+
+      <section class="block join" id="mitmachen" aria-labelledby="join-title">
+        <h2 id="join-title">Mitmachen</h2>
+        <p>Eine Fähigkeit ist nur ein Text: wann James sie nutzt und wie er sich verhält. Kein Programmieren nötig.</p>
+        <div class="cta">
+          <a class="button primary" href="https://github.com/Nivarro-boop/jarvis-iphone/issues/new?template=faehigkeit.yml" target="_blank" rel="noopener">Fähigkeit vorschlagen</a>
+          <a class="button" href="https://github.com/Nivarro-boop/jarvis-iphone/edit/main/public/marketplace.json" target="_blank" rel="noopener">Selbst eintragen</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>James · Alle Rechte vorbehalten</span>
+      <nav aria-label="Rechtliches">
+        <a href="../datenschutz/">Datenschutz</a>
+        <a href="https://github.com/Nivarro-boop/jarvis-iphone" target="_blank" rel="noopener">Quellcode</a>
+      </nav>
+    </footer>
+
+    <script type="module" src="/src/site/main.ts"></script>
+  </body>
+</html>

@@ -8,6 +8,10 @@ uns: Die App läuft komplett im iPhone und spricht direkt mit der gewählten KI.
 öffnen → Teilen → **Zum Home-Bildschirm**. Danach startet James wie eine App,
 im Vollbild und mit eigenem Symbol.
 
+**Marktplatz-Website:** https://nivarro-boop.github.io/jarvis-iphone/marktplatz/
+– alle Apps und Fähigkeiten, live aus GitHub, mit QR-Code zum Öffnen am iPhone.
+„In James installieren“ öffnet die App direkt an der richtigen Stelle.
+
 Schwesterprojekt: [James-Jarvis für Windows](https://github.com/Nivarro-boop/James-Jarvis).
 Das hier ist bewusst eigenständig und teilt keinen Code.
 
@@ -58,7 +62,9 @@ Eintrag unter `skills` anlegen und bei Änderungen `version` erhöhen:
 }
 ```
 
-Nach dem Merge steht sie nach etwa einer Minute bei allen im Marktplatz.
+Nach dem Merge steht sie nach etwa einer Minute bei allen im Marktplatz – in
+der App und auf der Website. Ohne GitHub-Kenntnisse: auf der Website
+„Fähigkeit vorschlagen“ (Formular als GitHub-Issue).
 Fähigkeiten sind nur Text (Anweisungen für James); es läuft kein fremder Code.
 
 ## Einrichten
@@ -93,6 +99,8 @@ veröffentlichte Seite nehmen oder einen HTTPS-Tunnel.
 | `src/market/` | Katalog, installierte Fähigkeiten, GitHub-Releases |
 | `src/update.ts` | Selbst-Update über `version.json` |
 | `public/marketplace.json` | Der Katalog des Marktplatzes |
+| `marktplatz/`, `src/site/` | Marktplatz-Website |
+| `datenschutz/` | Datenschutzerklärung (auch für den App Store) |
 | `src/store.ts` | Einstellungen, Verlauf, Gedächtnis (localStorage) |
 | `public/` | Manifest, Service Worker, Symbole |
 | `docs/` | Architektur, Weg in den App Store, offene Fragen |

@@ -1,0 +1,47 @@
+name: Fähigkeit vorschlagen
+description: Eine neue Fähigkeit für den James-Marktplatz
+title: "Fähigkeit: "
+labels: ["fähigkeit"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Eine Fähigkeit ist nur Text: wann James sie benutzt und wie er sich dann verhält.
+        Nach dem Prüfen landet sie in `public/marketplace.json` und steht danach bei allen im Marktplatz.
+  - type: input
+    id: name
+    attributes:
+      label: Name
+      placeholder: Gartenhelfer
+    validations:
+      required: true
+  - type: dropdown
+    id: category
+    attributes:
+      label: Kategorie
+      options: [Alltag, Lernen, Produktiv, Gesundheit, Freizeit, Spiel, Familie, Sonstiges]
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Kurzbeschreibung
+      description: Ein bis zwei Sätze für den Marktplatz.
+    validations:
+      required: true
+  - type: textarea
+    id: instructions
+    attributes:
+      label: Anweisungen für James
+      description: Wann soll James die Fähigkeit nutzen, und wie soll er sich verhalten?
+      placeholder: "Wenn es um Garten oder Pflanzen geht: …"
+    validations:
+      required: true
+  - type: textarea
+    id: examples
+    attributes:
+      label: Beispielsätze
+      description: Je Zeile ein Satz, den man zu James sagen kann.
+      placeholder: |
+        Wann schneide ich Rosen?
+        Wie oft gieße ich Tomaten?
