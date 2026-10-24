@@ -56,6 +56,9 @@ function appCard(app: AppEntry): HTMLElement {
     void fetchRemote(base).then(remote => {
       meta.textContent = remote ? `Version ${remote.version} · ${dateDe(remote.date)}` : 'Web-App, immer aktuell'
     })
+  } else if (app.kind === 'guide' && app.url) {
+    meta.textContent = 'Ohne App Store, über Siri'
+    actions.append(el('a', { className: 'button primary', href: `${appUrl}${app.url}`, textContent: 'Einrichten' }))
   } else if (app.repo) {
     void latestRelease(app.repo, app.asset)
       .then(release => {

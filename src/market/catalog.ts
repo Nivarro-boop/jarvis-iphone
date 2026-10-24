@@ -27,11 +27,13 @@ export interface AppEntry {
   name: string
   platform: string
   description: string
-  /** `self`: diese App. `github-release`: neueste Fassung aus einem Repo. */
-  kind: 'self' | 'github-release'
+  /** `self`: diese App. `github-release`: neueste Fassung aus einem Repo. `guide`: Anleitung unter `url`. */
+  kind: 'self' | 'github-release' | 'guide'
   repo?: string
   /** Regulärer Ausdruck für die Datei im Release, z. B. `Setup.*\\.exe$`. */
   asset?: string
+  /** Bei `guide`: Pfad relativ zur App, z. B. `uhr/`. */
+  url?: string
 }
 
 export interface Catalog {
@@ -68,7 +70,8 @@ export function parseCatalog(data: unknown): Catalog {
   const apps: AppEntry[] = []
   for (const item of Array.isArray(raw.apps) ? raw.apps : []) {
     const a = (item ?? {}) as Record<string, unknown>
-    const kind = a.kind === 'self' ? 'self' : a.kind === 'github-release' ? 'github-release' : null
+    const kind = a.kind === 'self' || a.kind === 'github-release' || a.kind === 'guide' ? a.kind : null
+    const url = str(a.url, 100)
     const repo = str(a.repo, 100)
     const entry: AppEntry = {
       id: str(a.id, 41),
@@ -77,10 +80,13 @@ export function parseCatalog(data: unknown): Catalog {
       description: str(a.description, 300),
       kind: kind ?? 'self',
       ...(repo ? { repo } : {}),
-      ...(str(a.asset, 100) ? { asset: str(a.asset, 100) } : {})
+      ...(str(a.asset, 100) ? { asset: str(a.asset, 100) } : {}),
+      ...(url ? { url } : {})
     }
     if (!kind || !ID.test(entry.id) || !entry.name) continue
     if (kind === 'github-release' && !/^[\w.-]+\/[\w.-]+$/.test(repo)) continue
+    // Nur Pfade innerhalb der App, keine fremden Adressen aus dem Katalog.
+    if (kind === 'guide' && !/^[a-z0-9-]+\/$/.test(url)) continue
     apps.push(entry)
   }
   return { updated: str(raw.updated, 40), skills, apps }

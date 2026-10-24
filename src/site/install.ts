@@ -17,7 +17,11 @@ const standalone = matchMedia('(display-mode: standalone)').matches || (navigato
 if (standalone) {
   $('install-lead').textContent = 'James ist schon installiert. Viel Freude damit!'
 } else if (ios && safari) {
-  $('ios-safari').hidden = false
+  $('ios-profile').hidden = false
+  $('show-manual').addEventListener('click', () => {
+    $('ios-profile').hidden = true
+    $('ios-safari').hidden = false
+  })
 } else if (ios) {
   $('ios-other').hidden = false
   $('copy-link').addEventListener('click', async () => {

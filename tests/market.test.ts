@@ -26,6 +26,9 @@ describe('Katalog', () => {
     expect(catalog.skills.map(s => s.id)).toEqual(['gut'])
     expect(catalog.apps.map(a => a.id)).toEqual(['eigen'])
     expect(parseCatalog(null)).toEqual({ updated: '', skills: [], apps: [] })
+    // Anleitungen nur als Pfad innerhalb der App, nie als fremde Adresse.
+    const guides = parseCatalog({ apps: [{ id: 'uhr', name: 'Uhr', kind: 'guide', url: 'uhr/' }, { id: 'boese', name: 'B', kind: 'guide', url: 'https://evil.example/' }] })
+    expect(guides.apps.map(a => a.id)).toEqual(['uhr'])
   })
 
   it('vergleicht Versionen numerisch', () => {

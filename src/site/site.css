@@ -157,6 +157,8 @@ h2 { margin: 0; font-size: 28px; letter-spacing: -0.02em; }
 .num { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: #04101f; font-weight: 700; }
 .steps .fine { text-align: center; }
 .button.wide { width: 100%; margin-top: 16px; min-height: 52px; font-size: 17px; }
+.button.big { min-height: 60px; font-size: 20px; margin: 0 0 20px; }
+.linkish { border: 0; background: none; color: var(--accent-2); font: inherit; text-decoration: underline; cursor: pointer; padding: 0; }
 .steps.desktop { display: grid; grid-template-columns: auto 1fr; gap: 32px; align-items: start; }
 .steps.desktop h2 { font-size: 20px; margin: 0 0 6px; }
 .steps.desktop p { color: var(--dim); margin: 0 0 18px; }
@@ -171,6 +173,14 @@ h2 { margin: 0; font-size: 28px; letter-spacing: -0.02em; }
 .prose h1 { font-size: 40px; }
 .prose h2 { font-size: 22px; margin: 32px 0 8px; }
 .prose p, .prose li { color: #c3cfdd; }
+
+/* ── Uhr-Anleitung ──────────────────────── */
+
+.watch .lead { color: var(--dim); font-size: 18px; }
+.recipe { display: grid; gap: 12px; padding-left: 22px; }
+.recipe ul { margin: 6px 0; padding-left: 18px; display: grid; gap: 4px; }
+.watch code { background: var(--surface-2); border-radius: 6px; padding: 1px 6px; font-size: 13px; word-break: break-all; }
+.watch pre { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px; white-space: pre-wrap; word-break: break-all; font-size: 13px; color: #c3cfdd; }
 
 /* ── Schmal ─────────────────────────────── */
 

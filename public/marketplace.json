@@ -9,6 +9,14 @@
       "kind": "self"
     },
     {
+      "id": "james-watch",
+      "name": "James für Apple Watch",
+      "platform": "Apple Watch",
+      "description": "„Hey Siri, frag James“ – James antwortet an der Uhr. Läuft als Siri-Kurzbefehl, Einrichtung in fünf Minuten.",
+      "kind": "guide",
+      "url": "uhr/"
+    },
+    {
       "id": "james-windows",
       "name": "James für Windows",
       "platform": "Windows",

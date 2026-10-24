@@ -104,6 +104,9 @@ export function setupMarket(options: { onChanged(): void }): { open(focus?: stri
           chip.className = 'chip on'
         }
       })
+    } else if (app.kind === 'guide' && app.url) {
+      meta.textContent = 'Ohne App Store, über Siri'
+      actions.replaceChildren(el('a', { className: 'pill', href: `${import.meta.env.BASE_URL}${app.url}`, target: '_blank', rel: 'noopener', textContent: 'Einrichten' }))
     } else if (app.repo) {
       void latestRelease(app.repo, app.asset)
         .then(release => {

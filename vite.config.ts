@@ -2,6 +2,8 @@ import { execSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { defineConfig, type Plugin } from 'vitest/config'
+// @ts-expect-error – reines JavaScript ohne Typen
+import { webClipProfile } from './scripts/webclip.mjs'
 
 /**
  * Jeder Build kennt seine Version, und `version.json` liegt daneben. Die App
@@ -31,11 +33,19 @@ const build = {
     .filter(Boolean)
 }
 
+/** Die App-Adresse für das Installationsprofil — immer die veröffentlichte. */
+const APP_URL = process.env.APP_URL ?? 'https://nivarro-boop.github.io/jarvis-iphone/'
+
 function versionFile(): Plugin {
   return {
     name: 'james-version',
     generateBundle() {
       this.emitFile({ type: 'asset', fileName: 'version.json', source: JSON.stringify(build, null, 2) })
+      this.emitFile({
+        type: 'asset',
+        fileName: 'james.mobileconfig',
+        source: webClipProfile({ url: APP_URL, iconFile: fileURLToPath(new URL('./public/icons/apple-touch-icon.png', import.meta.url)) })
+      })
     }
   }
 }
@@ -54,7 +64,8 @@ export default defineConfig({
         app: fileURLToPath(new URL('./index.html', import.meta.url)),
         marktplatz: fileURLToPath(new URL('./marktplatz/index.html', import.meta.url)),
         datenschutz: fileURLToPath(new URL('./datenschutz/index.html', import.meta.url)),
-        installieren: fileURLToPath(new URL('./installieren/index.html', import.meta.url))
+        installieren: fileURLToPath(new URL('./installieren/index.html', import.meta.url)),
+        uhr: fileURLToPath(new URL('./uhr/index.html', import.meta.url))
       }
     }
   },

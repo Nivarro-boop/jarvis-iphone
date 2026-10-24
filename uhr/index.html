@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>James auf der Apple Watch</title>
+    <meta name="description" content="„Hey Siri, frag James“ – James auf der Apple Watch, ohne App Store." />
+    <meta name="theme-color" content="#05070b" />
+    <link rel="icon" type="image/png" href="../icons/icon-192.png" />
+  </head>
+  <body class="site">
+    <header class="nav">
+      <a class="brand" href="../marktplatz/">
+        <img src="../icons/icon-192.png" alt="" width="32" height="32" />
+        <span>James <em>Apple Watch</em></span>
+      </a>
+      <nav aria-label="Bereiche"><a href="../marktplatz/">Marktplatz</a></nav>
+    </header>
+    <main class="prose watch">
+      <h1>„Hey Siri, frag James“</h1>
+      <p class="lead">Auf der Apple Watch läuft James über einen Siri-Kurzbefehl: Handgelenk heben, fragen, James antwortet laut. Einmal am iPhone einrichten, etwa fünf Minuten.</p>
+
+      <h2>Was du brauchst</h2>
+      <ul>
+        <li>Die App <strong>Kurzbefehle</strong> (ist auf jedem iPhone).</li>
+        <li>Deinen Gemini-Schlüssel – denselben wie in James (<a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a>).</li>
+      </ul>
+
+      <h2>Kurzbefehl bauen</h2>
+      <ol class="recipe">
+        <li>Kurzbefehle öffnen → <strong>+</strong> → Name: <strong>Frag James</strong>.</li>
+        <li>Aktion <strong>Text diktieren</strong> hinzufügen. Sprache: Deutsch, Diktieren beenden: nach Pause.</li>
+        <li>Aktion <strong>Inhalte von URL abrufen</strong>:
+          <ul>
+            <li>URL: <code id="api-url">https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent</code> <button class="linkish copy" data-copy="api-url" type="button">kopieren</button></li>
+            <li>Methode: <strong>POST</strong></li>
+            <li>Header: <code>x-goog-api-key</code> = dein Schlüssel, <code>Content-Type</code> = <code>application/json</code></li>
+            <li>Anfragetext: <strong>Datei</strong> → davor eine Aktion <strong>Text</strong> mit diesem Inhalt, „Diktierter Text“ als Variable einsetzen:</li>
+          </ul>
+          <pre id="body-json">{"systemInstruction":{"parts":[{"text":"Du bist James, ein knapper, freundlicher Assistent auf einer Apple Watch. Antworte auf Deutsch in höchstens zwei kurzen Sätzen, ohne Markdown."}]},"contents":[{"parts":[{"text":"DIKTIERTER TEXT"}]}]}</pre>
+          <button class="linkish copy" data-copy="body-json" type="button">Vorlage kopieren</button>
+        </li>
+        <li>Aktion <strong>Wörterbuchwert abrufen</strong>: Schlüssel <code>candidates.1.content.parts.1.text</code>.</li>
+        <li>Aktion <strong>Text sprechen</strong> (oder <strong>Ergebnis anzeigen</strong>).</li>
+        <li>In den Details des Kurzbefehls <strong>Auf Apple Watch anzeigen</strong> einschalten.</li>
+      </ol>
+
+      <h2>Benutzen</h2>
+      <p>An der Uhr: <strong>„Hey Siri, frag James“</strong> – dann deine Frage. Oder den Kurzbefehl als Komplikation aufs Zifferblatt legen.</p>
+
+      <h2>Was (noch) nicht geht</h2>
+      <p>Eine eigene Watch-App mit Kugel und Gespräch braucht das Apple-Entwicklerkonto und kommt mit der App-Store-Fassung. Bis dahin ist der Kurzbefehl der schnellste Weg – er läuft auch ohne iPhone in der Nähe, wenn die Uhr eigenes Netz hat.</p>
+    </main>
+    <footer class="footer">
+      <span>James · Alle Rechte vorbehalten</span>
+      <nav aria-label="Rechtliches"><a href="../datenschutz/">Datenschutz</a></nav>
+    </footer>
+    <script type="module" src="/src/site/watch.ts"></script>
+  </body>
+</html>
