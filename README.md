@@ -24,6 +24,42 @@ Das hier ist bewusst eigenständig und teilt keinen Code.
 - **Zwei KI-Anbieter:** Google Gemini (kostenloser Schlüssel) oder OpenAI.
   Modelle werden aus dem eigenen Konto geladen.
 - Tippen geht immer, auch ohne Mikrofon.
+- **Marktplatz** (Symbol oben): Fähigkeiten wie Kochassistent, Englisch-Trainer,
+  Fokus-Coach, Quizmaster mit einem Tipp installieren; dazu die Apps der
+  James-Familie (Windows-Installer immer in der neuesten Fassung aus den
+  GitHub-Releases) und die Neuigkeiten der aktuellen Version.
+
+## Immer aktuell – direkt aus GitHub
+
+Jeder Push auf `main` wird geprüft, gebaut und nach GitHub Pages veröffentlicht.
+Der Build legt eine `version.json` mit Versionsnummer (`0.2.<Lauf>`), Commit
+und den letzten Änderungen daneben.
+
+- Die App fragt beim Start, beim Zurückkehren und alle 30 Minuten nach.
+- Direkt nach dem Start aktualisiert sie sich still; mitten im Gebrauch zeigt
+  sie „Neue Version … · Aktualisieren“, damit kein Gespräch abreißt.
+- Installierte Fähigkeiten werden auf die neueste Fassung im Katalog gezogen.
+
+## Eine Fähigkeit hinzufügen
+
+`public/marketplace.json` bearbeiten (direkt auf GitHub oder per Pull Request),
+Eintrag unter `skills` anlegen und bei Änderungen `version` erhöhen:
+
+```json
+{
+  "id": "gaertner",
+  "name": "Gartenhelfer",
+  "version": "1.0.0",
+  "category": "Alltag",
+  "description": "Was wann gepflanzt, gegossen und geschnitten wird.",
+  "instructions": "Wenn es um Garten oder Pflanzen geht: …",
+  "examples": ["Wann schneide ich Rosen?"],
+  "author": "Hans"
+}
+```
+
+Nach dem Merge steht sie nach etwa einer Minute bei allen im Marktplatz.
+Fähigkeiten sind nur Text (Anweisungen für James); es läuft kein fremder Code.
 
 ## Einrichten
 
@@ -44,8 +80,6 @@ npm run build      # Typprüfung + Produktionsbuild nach dist/
 Spracherkennung braucht HTTPS oder localhost. Zum Testen am iPhone deshalb die
 veröffentlichte Seite nehmen oder einen HTTPS-Tunnel.
 
-Jeder Push auf `main` wird geprüft und nach GitHub Pages veröffentlicht
-(`.github/workflows/pages.yml`).
 
 ## Aufbau
 
@@ -55,7 +89,10 @@ Jeder Push auf `main` wird geprüft und nach GitHub Pages veröffentlicht
 | `src/ai/` | Neutrales Gesprächsformat, Adapter für Gemini und OpenAI, Werkzeugschleife |
 | `src/speech/` | Spracherkennung, Vorlesen, Zerlegen in Sätze |
 | `src/tools/` | Wetter, Wikipedia, Merken, Timer |
-| `src/ui/` | Kugel (Canvas), Einstellungen, Verlauf, Timer |
+| `src/ui/` | Kugel (Canvas), Einstellungen, Verlauf, Timer, Marktplatz |
+| `src/market/` | Katalog, installierte Fähigkeiten, GitHub-Releases |
+| `src/update.ts` | Selbst-Update über `version.json` |
+| `public/marketplace.json` | Der Katalog des Marktplatzes |
 | `src/store.ts` | Einstellungen, Verlauf, Gedächtnis (localStorage) |
 | `public/` | Manifest, Service Worker, Symbole |
 | `docs/` | Architektur, Weg in den App Store, offene Fragen |

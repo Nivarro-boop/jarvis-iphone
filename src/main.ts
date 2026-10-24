@@ -8,9 +8,12 @@ import { Speaker } from './speech/speak'
 import { loadHistory, loadMemory, loadSettings, saveHistory, type Settings } from './store'
 import { busyLabel, runTool, toolSpecs } from './tools'
 import { Orb, type OrbState } from './ui/orb'
+import { skillsPrompt } from './market/installed'
+import { setupMarket } from './ui/market'
 import { setupSettings } from './ui/settings'
 import { Timers } from './ui/timers'
 import { renderTranscript } from './ui/transcript'
+import { applyUpdate, watchForUpdates } from './update'
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T
 
@@ -32,6 +35,10 @@ let settings: Settings = loadSettings()
 let history: Message[] = loadHistory()
 let turn: AbortController | null = null
 let state: OrbState = 'idle'
+/** Hat der Nutzer seit dem Start schon etwas getan? Dann kein stilles Neuladen mehr. */
+let touched = false
+document.addEventListener('pointerdown', () => (touched = true), { capture: true, once: true })
+document.addEventListener('keydown', () => (touched = true), { capture: true, once: true })
 
 const orb = new Orb($<HTMLCanvasElement>('orb'))
 const speaker = new Speaker()
@@ -133,7 +140,7 @@ async function ask(question: string): Promise<void> {
       provider,
       apiKey: settings.keys[settings.provider].trim(),
       model: settings.models[settings.provider],
-      system: systemPrompt({ userName: settings.userName, memory: loadMemory() }),
+      system: systemPrompt({ userName: settings.userName, memory: loadMemory(), skills: skillsPrompt() }),
       history,
       userText: text,
       tools: toolSpecs,
@@ -244,6 +251,12 @@ const { open: openSettings } = setupSettings({
 $('welcome-setup').addEventListener('click', openSettings)
 $('open-settings').addEventListener('click', openSettings)
 
+// Der Systemprompt wird vor jeder Frage neu gebaut; Änderungen wirken also sofort.
+const market = setupMarket({ onChanged: () => undefined })
+$('open-market').addEventListener('click', market.open)
+// Installierte Fähigkeiten auch ohne Öffnen des Marktplatzes aktuell halten.
+void market.refresh()
+
 const historyDialog = $<HTMLDialogElement>('history')
 $('open-history').addEventListener('click', () => {
   renderTranscript($('transcript'), history)
@@ -281,6 +294,16 @@ speaker.voiceURI = settings.voice
 speaker.rate = settings.rate
 setState('idle')
 refreshSetup()
+
+watchForUpdates({
+  busy: () => !['idle', 'setup', 'error'].includes(state) || !!document.querySelector('dialog[open]'),
+  touched: () => touched,
+  onAvailable: remote => {
+    $('update-text').textContent = `Neue Version ${remote.version} ist da`
+    $('update').hidden = false
+  }
+})
+$('update-apply').addEventListener('click', () => void applyUpdate())
 
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
   navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`).catch(() => undefined)

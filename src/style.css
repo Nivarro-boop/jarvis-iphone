@@ -130,6 +130,13 @@ svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width:
 }
 .install strong { color: var(--text); font-weight: 600; }
 
+.update {
+  position: absolute; left: 16px; right: 16px; top: calc(var(--safe-top) + 56px); z-index: 2;
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 6px 8px 6px 14px; border-radius: 14px; background: #10233d; border: 1px solid #2c5a92;
+  font-size: 14px; animation: rise 0.3s ease-out;
+}
+
 /* ── Eingabeleiste ─────────────────────────── */
 
 .dock { display: flex; gap: 10px; align-items: center; }
@@ -215,6 +222,25 @@ legend { float: left; width: 100%; padding: 0; margin-bottom: 2px; color: var(--
 .transcript .user { justify-self: end; background: #1e4f8f; }
 .transcript .assistant { justify-self: start; background: #151f2c; }
 .transcript:empty::before { content: 'Noch kein Gespräch.'; color: var(--dim); }
+
+/* ── Marktplatz ────────────────────────────── */
+
+.tabs { grid-template-columns: repeat(3, 1fr); margin-bottom: 12px; }
+.market-list { display: grid; gap: 12px; margin-bottom: 18px; }
+.card { background: #111925; border-radius: var(--radius); padding: 14px; display: grid; gap: 8px; }
+.card-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.card h3 { margin: 0; font-size: 17px; }
+.chip { font-size: 12px; color: var(--dim); border: 1px solid var(--line); border-radius: 999px; padding: 2px 8px; white-space: nowrap; }
+.chip.on { color: #3ddc97; border-color: #3ddc9766; }
+.card p { margin: 0; color: var(--dim); font-size: 14px; line-height: 1.45; }
+.examples { margin: 0; padding: 0; list-style: none; display: grid; gap: 2px; font-size: 14px; color: #b8c7d8; font-style: italic; }
+.examples li::before { content: '„'; }
+.examples li::after { content: '“'; }
+.card-actions { display: flex; justify-content: flex-end; gap: 8px; align-items: center; }
+.pill { border: 0; border-radius: 999px; padding: 8px 16px; font-weight: 650; font-size: 15px; background: var(--accent); color: #04101f; text-decoration: none; }
+.pill.ghost { background: transparent; border: 1px solid var(--line); color: var(--text); }
+.news { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 15px; line-height: 1.4; }
+.category { margin: 8px 0 -4px; color: var(--dim); font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }

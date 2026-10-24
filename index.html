@@ -23,6 +23,9 @@
           <span id="status">Bereit</span>
         </div>
         <div class="top-actions">
+          <button class="icon-button" id="open-market" type="button" aria-label="Marktplatz">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5l1.5-5h13l1.5 5M4 9.5h16M4 9.5c0 1.4 1.1 2.5 2.7 2.5S9.3 10.9 9.3 9.5c0 1.4 1.2 2.5 2.7 2.5s2.7-1.1 2.7-2.5c0 1.4 1.1 2.5 2.6 2.5S20 10.9 20 9.5M5.5 12v7.5h13V12M10 19.5v-4h4v4" /></svg>
+          </button>
           <button class="icon-button" id="open-history" type="button" aria-label="Verlauf">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h11M4 18h7" /></svg>
           </button>
@@ -56,6 +59,11 @@
       </section>
 
       <div class="timers" id="timers" aria-live="polite"></div>
+
+      <aside class="update" id="update" hidden>
+        <span id="update-text">Neue Version verfügbar</span>
+        <button class="text-button" id="update-apply" type="button">Aktualisieren</button>
+      </aside>
 
       <aside class="install" id="install" hidden>
         <span>Als App installieren: <strong>Teilen</strong> → <strong>Zum Home-Bildschirm</strong></span>
@@ -141,6 +149,25 @@
           <button class="text-button" value="close">Fertig</button>
         </header>
         <ol class="transcript" id="transcript"></ol>
+      </form>
+    </dialog>
+
+    <dialog class="sheet" id="market" aria-labelledby="market-title">
+      <form method="dialog" class="sheet-body">
+        <header class="sheet-head">
+          <h2 id="market-title">Marktplatz</h2>
+          <button class="text-button" value="close">Fertig</button>
+        </header>
+        <div class="segmented tabs" role="tablist" aria-label="Bereich">
+          <label><input type="radio" name="market-tab" value="skills" checked /><span>Fähigkeiten</span></label>
+          <label><input type="radio" name="market-tab" value="apps" /><span>Apps</span></label>
+          <label><input type="radio" name="market-tab" value="news" /><span>Neu</span></label>
+        </div>
+        <p class="note" id="market-status"></p>
+        <div class="market-list" id="market-skills"></div>
+        <div class="market-list" id="market-apps" hidden></div>
+        <div class="market-list" id="market-news" hidden></div>
+        <p class="note small">Der Marktplatz kommt direkt aus dem GitHub-Repo <a href="https://github.com/Nivarro-boop/jarvis-iphone" target="_blank" rel="noopener">Nivarro-boop/jarvis-iphone</a>. Neue Fähigkeiten und Updates erscheinen hier automatisch, sobald sie dort veröffentlicht sind.</p>
       </form>
     </dialog>
 

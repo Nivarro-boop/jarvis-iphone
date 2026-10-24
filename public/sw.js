@@ -5,7 +5,7 @@
  * Strategie: Seiten zuerst aus dem Netz (damit Updates ankommen), sonst aus
  * dem Zwischenspeicher; Dateien mit Hash im Namen aus dem Zwischenspeicher.
  */
-const CACHE = 'james-v1'
+const CACHE = 'james-v2'
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(['./', 'manifest.webmanifest', 'icons/apple-touch-icon.png'])))
@@ -22,6 +22,8 @@ self.addEventListener('fetch', event => {
   const request = event.request
   const url = new URL(request.url)
   if (request.method !== 'GET' || url.origin !== self.location.origin) return
+  // Versions- und Kataloginfo immer frisch von GitHub Pages.
+  if (/\/(version|marketplace)\.json$/.test(url.pathname)) return
 
   if (request.mode === 'navigate') {
     event.respondWith(
