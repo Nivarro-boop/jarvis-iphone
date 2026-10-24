@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content" />
+    <title>James</title>
+    <meta name="description" content="James – dein persönlicher Sprachassistent fürs iPhone." />
+    <meta name="theme-color" content="#05070b" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="James" />
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" href="icons/icon-192.png" />
+    <link rel="manifest" href="manifest.webmanifest" />
+  </head>
+  <body>
+    <main class="app" id="app" data-state="idle">
+      <header class="top">
+        <div class="status" aria-live="polite">
+          <span class="dot" aria-hidden="true"></span>
+          <span id="status">Bereit</span>
+        </div>
+        <div class="top-actions">
+          <button class="icon-button" id="open-history" type="button" aria-label="Verlauf">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h11M4 18h7" /></svg>
+          </button>
+          <button class="icon-button" id="open-settings" type="button" aria-label="Einstellungen">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2" /><path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7" /></svg>
+          </button>
+        </div>
+      </header>
+
+      <section class="stage">
+        <button class="orb-button" id="orb-button" type="button" aria-label="Sprechen">
+          <canvas id="orb" aria-hidden="true"></canvas>
+        </button>
+        <p class="hint" id="hint">Tippe auf die Kugel und sprich.</p>
+      </section>
+
+      <section class="caption" aria-live="polite">
+        <p class="you" id="you"></p>
+        <p class="answer" id="answer"></p>
+      </section>
+
+      <section class="welcome" id="welcome" hidden>
+        <h1>Guten Tag. Ich bin James.</h1>
+        <p>Damit ich denken kann, brauche ich einen Schlüssel für eine KI. Der von Google Gemini ist kostenlos und in einer Minute erstellt.</p>
+        <ol>
+          <li><a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a> öffnen und mit dem Google-Konto anmelden.</li>
+          <li>„API-Schlüssel erstellen“ tippen und kopieren.</li>
+          <li>Unten auf „Schlüssel einfügen“ tippen. Er bleibt nur auf diesem iPhone.</li>
+        </ol>
+        <button class="primary" id="welcome-setup" type="button">Schlüssel einfügen</button>
+      </section>
+
+      <div class="timers" id="timers" aria-live="polite"></div>
+
+      <aside class="install" id="install" hidden>
+        <span>Als App installieren: <strong>Teilen</strong> → <strong>Zum Home-Bildschirm</strong></span>
+        <button class="icon-button small" id="install-close" type="button" aria-label="Schließen">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+        </button>
+      </aside>
+
+      <footer class="dock">
+        <form class="compose" id="compose" autocomplete="off">
+          <input id="text" type="text" placeholder="Schreib James …" enterkeyhint="send" aria-label="Nachricht an James" />
+          <button class="send" type="submit" aria-label="Senden">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5.5 11.5L12 5l6.5 6.5" /></svg>
+          </button>
+        </form>
+        <button class="talk" id="talk" type="button" aria-label="Sprechen">
+          <svg class="mic" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M5.5 11a6.5 6.5 0 0013 0M12 17.5V21" /></svg>
+          <svg class="stop" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="2" /></svg>
+        </button>
+      </footer>
+    </main>
+
+    <dialog class="sheet" id="settings" aria-labelledby="settings-title">
+      <form method="dialog" class="sheet-body" id="settings-form">
+        <header class="sheet-head">
+          <h2 id="settings-title">Einstellungen</h2>
+          <button class="text-button" value="close">Fertig</button>
+        </header>
+
+        <fieldset>
+          <legend>KI</legend>
+          <div class="segmented" role="radiogroup" aria-label="Anbieter">
+            <label><input type="radio" name="provider" value="gemini" /><span>Gemini</span></label>
+            <label><input type="radio" name="provider" value="openai" /><span>OpenAI</span></label>
+          </div>
+          <label class="field">
+            <span>API-Schlüssel</span>
+            <input id="key" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Einfügen" />
+          </label>
+          <p class="note" id="key-help"></p>
+          <label class="field">
+            <span>Modell</span>
+            <div class="row">
+              <select id="model"></select>
+              <button class="text-button" id="load-models" type="button">Prüfen</button>
+            </div>
+          </label>
+          <p class="note" id="model-status"></p>
+        </fieldset>
+
+        <fieldset>
+          <legend>Du</legend>
+          <label class="field"><span>Name</span><input id="user-name" type="text" autocomplete="given-name" /></label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Stimme</legend>
+          <label class="field"><span>Stimme</span><select id="voice"></select></label>
+          <label class="field"><span>Tempo <output id="rate-out"></output></span><input id="rate" type="range" min="0.7" max="1.5" step="0.05" /></label>
+          <label class="toggle"><input id="speak" type="checkbox" /><span>Antworten vorlesen</span></label>
+          <label class="toggle"><input id="conversation" type="checkbox" /><span>Gesprächsmodus: nach der Antwort weiter zuhören</span></label>
+          <button class="text-button" id="test-voice" type="button">Stimme testen</button>
+          <p class="note">Bessere Stimmen: iOS-Einstellungen → Bedienungshilfen → Gesprochene Inhalte → Stimmen → Deutsch, dort eine „Erweitert“-Stimme laden.</p>
+        </fieldset>
+
+        <fieldset>
+          <legend>Gedächtnis</legend>
+          <ul class="memory" id="memory"></ul>
+          <div class="row">
+            <button class="text-button danger" id="clear-history" type="button">Verlauf löschen</button>
+            <button class="text-button danger" id="clear-memory" type="button">Gedächtnis löschen</button>
+          </div>
+        </fieldset>
+
+        <p class="note small">James läuft komplett auf diesem iPhone. Schlüssel, Verlauf und Gedächtnis liegen nur hier; Anfragen gehen direkt an den gewählten KI-Anbieter. Wetter: Open-Meteo. Wissen: Wikipedia.</p>
+      </form>
+    </dialog>
+
+    <dialog class="sheet" id="history" aria-labelledby="history-title">
+      <form method="dialog" class="sheet-body">
+        <header class="sheet-head">
+          <h2 id="history-title">Verlauf</h2>
+          <button class="text-button" value="close">Fertig</button>
+        </header>
+        <ol class="transcript" id="transcript"></ol>
+      </form>
+    </dialog>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
