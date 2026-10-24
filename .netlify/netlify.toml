@@ -1,0 +1,104 @@
+plugins = []
+
+[functions]
+
+[functions."*"]
+
+[build]
+publish = "C:\\Users\\F_ste\\Jarvis-iPhone\\dist"
+publishOrigin = "ui"
+commandOrigin = "ui"
+command = "npm run build"
+
+[build.environment]
+
+[build.processing]
+
+[build.processing.css]
+
+[build.processing.html]
+
+[build.processing.images]
+
+[build.processing.js]
+
+[build.services]
+
+[[headers]]
+for = "/jarvis-iphone/james.mobileconfig"
+
+[headers.values]
+Content-Type = "application/x-apple-aspen-config"
+Cache-Control = "no-cache"
+
+[[redirects]]
+from = "/"
+to = "/jarvis-iphone/marktplatz/"
+status = 302.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/laden"
+to = "/jarvis-iphone/installieren/"
+status = 302.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/uhr"
+to = "/jarvis-iphone/uhr/"
+status = 302.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/app"
+to = "/jarvis-iphone/"
+status = 302.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/datenschutz"
+to = "/jarvis-iphone/datenschutz/"
+status = 302.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/jarvis-iphone/*"
+to = "https://nivarro-boop.github.io/jarvis-iphone/:splat"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]

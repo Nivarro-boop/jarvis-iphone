@@ -9,7 +9,13 @@ iPhone die drei Tipps (James öffnen → Teilen → **Zum Home-Bildschirm**), am
 einen QR-Code und den Windows-Installer. Danach startet James wie eine App,
 im Vollbild und mit eigenem Symbol.
 
-**Marktplatz-Website:** https://nivarro-boop.github.io/jarvis-iphone/marktplatz/
+**Marktplatz:** https://james-marktplatz.netlify.app – „Runterladen“ installiert
+James am iPhone mit einem Profil (Erlauben → Einstellungen → Installieren).
+Die Netlify-Site spiegelt GitHub Pages live; nur das Profil liegt dort selbst
+(`npm run netlify`, Erklärung in `scripts/netlify-site.mjs`). Apple Watch:
+https://james-marktplatz.netlify.app/uhr.
+
+**Marktplatz auf GitHub Pages:** https://nivarro-boop.github.io/jarvis-iphone/marktplatz/
 – alle Apps und Fähigkeiten, live aus GitHub, mit QR-Code zum Öffnen am iPhone.
 „In James installieren“ öffnet die App direkt an der richtigen Stelle.
 

@@ -9,7 +9,8 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview --host",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "netlify": "sh scripts/netlify-deploy.sh"
   },
   "devDependencies": {
     "@types/node": "^26.6.5",
