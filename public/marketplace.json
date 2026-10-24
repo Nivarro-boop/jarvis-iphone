@@ -6,7 +6,12 @@
       "name": "James für iPhone",
       "platform": "iPhone",
       "description": "Eigener Assistent am iPhone: spricht, merkt sich Dinge, liest und schreibt Gmail, verwaltet den Kalender – und steuert auf Wunsch James am PC fern. Aktualisiert sich selbst.",
-      "kind": "self"
+      "kind": "self",
+      "tagline": "Dein Assistent. Hört zu, denkt mit, erledigt.",
+      "accent": "#2f86ef",
+      "icon": "icons/apple-touch-icon.png",
+      "profile": "james.mobileconfig",
+      "watch": "uhr/"
     },
     {
       "id": "james-watch",
@@ -14,7 +19,10 @@
       "platform": "Apple Watch",
       "description": "„Hey Siri, frag James“ – James antwortet an der Uhr. Läuft als Siri-Kurzbefehl, Einrichtung in fünf Minuten.",
       "kind": "guide",
-      "url": "uhr/"
+      "url": "uhr/",
+      "tagline": "„Hey Siri, frag James“ – am Handgelenk.",
+      "accent": "#7b5cff",
+      "icon": "icons/apple-touch-icon.png"
     },
     {
       "id": "james-windows",
@@ -23,7 +31,10 @@
       "description": "Der große Bruder am PC: steuert Programme, Browser, Mails und Kalender. Vom iPhone aus fernbedienbar. Installer immer in der neuesten Fassung.",
       "kind": "github-release",
       "repo": "Nivarro-boop/James-Jarvis",
-      "asset": "Setup.*\\.exe$"
+      "asset": "Setup.*\\.exe$",
+      "tagline": "Der Agent für deinen PC. Fernbedienbar vom iPhone.",
+      "accent": "#0fb5a8",
+      "icon": "icons/icon-192.png"
     }
   ],
   "skills": [

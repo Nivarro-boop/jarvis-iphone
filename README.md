@@ -9,7 +9,8 @@ iPhone die drei Tipps (James öffnen → Teilen → **Zum Home-Bildschirm**), am
 einen QR-Code und den Windows-Installer. Danach startet James wie eine App,
 im Vollbild und mit eigenem Symbol.
 
-**Marktplatz:** https://james-marktplatz.netlify.app – „Runterladen“ installiert
+**James Store:** https://james-marktplatz.netlify.app – Store wie Epic/App Store
+(Entdecken, Suche, Bibliothek), selbst als App installierbar. „Holen“ installiert
 James am iPhone mit einem Profil (Erlauben → Einstellungen → Installieren).
 Die Netlify-Site spiegelt GitHub Pages live; nur das Profil liegt dort selbst
 (`npm run netlify`, Erklärung in `scripts/netlify-site.mjs`). Apple Watch:

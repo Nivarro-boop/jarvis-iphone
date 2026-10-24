@@ -34,6 +34,12 @@ export interface AppEntry {
   asset?: string
   /** Bei `guide`: Pfad relativ zur App, z. B. `uhr/`. */
   url?: string
+  /** Für den Store: kurzer Werbesatz, Akzentfarbe, Symbol, Installationsprofil, Watch-Anleitung. */
+  tagline?: string
+  accent?: string
+  icon?: string
+  profile?: string
+  watch?: string
 }
 
 export interface Catalog {
@@ -81,7 +87,12 @@ export function parseCatalog(data: unknown): Catalog {
       kind: kind ?? 'self',
       ...(repo ? { repo } : {}),
       ...(str(a.asset, 100) ? { asset: str(a.asset, 100) } : {}),
-      ...(url ? { url } : {})
+      ...(url ? { url } : {}),
+      ...(str(a.tagline, 80) ? { tagline: str(a.tagline, 80) } : {}),
+      ...(/^#[0-9a-f]{6}$/i.test(str(a.accent, 7)) ? { accent: str(a.accent, 7) } : {}),
+      ...(/^icons\/[\w.-]+\.png$/.test(str(a.icon, 60)) ? { icon: str(a.icon, 60) } : {}),
+      ...(/^[a-z0-9-]+\.mobileconfig$/.test(str(a.profile, 60)) ? { profile: str(a.profile, 60) } : {}),
+      ...(/^[a-z0-9-]+\/$/.test(str(a.watch, 40)) ? { watch: str(a.watch, 40) } : {})
     }
     if (!kind || !ID.test(entry.id) || !entry.name) continue
     if (kind === 'github-release' && !/^[\w.-]+\/[\w.-]+$/.test(repo)) continue

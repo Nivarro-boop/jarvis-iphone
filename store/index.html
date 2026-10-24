@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>James Store</title>
+    <meta name="description" content="James Store – Apps und Fähigkeiten für iPhone, Apple Watch und PC. Kostenlos, ohne App Store." />
+    <meta name="theme-color" content="#07080d" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="James Store" />
+    <meta property="og:title" content="James Store" />
+    <meta property="og:description" content="Apps und Fähigkeiten für iPhone, Apple Watch und PC." />
+    <meta property="og:image" content="https://nivarro-boop.github.io/jarvis-iphone/icons/store-512.png" />
+    <link rel="apple-touch-icon" href="../icons/store-180.png" />
+    <link rel="icon" type="image/png" href="../icons/store-192.png" />
+    <link rel="manifest" href="store.webmanifest" />
+  </head>
+  <body class="store">
+    <header class="store-top">
+      <div class="store-brand"><img src="../icons/store-192.png" alt="" width="30" height="30" /><span>James Store</span></div>
+      <span class="store-badge" id="store-version"></span>
+    </header>
+
+    <main class="store-main">
+      <!-- Entdecken -->
+      <section class="view" id="view-discover" aria-label="Entdecken">
+        <div class="hero-rail" id="hero"></div>
+        <h2 class="row-title">Alle Apps</h2>
+        <div class="rail" id="apps-rail"></div>
+        <h2 class="row-title">Fähigkeiten für James <span>kostenlos</span></h2>
+        <div class="rail" id="skills-rail"></div>
+        <h2 class="row-title">Neu im Store</h2>
+        <ol class="news" id="news"></ol>
+        <div class="install-store" id="install-store" hidden>
+          <img src="../icons/store-192.png" alt="" width="44" height="44" />
+          <div><strong>James Store als App</strong><small>Einmal installieren, dann wie Epic oder der App Store benutzen.</small></div>
+          <a class="get" id="install-store-link" href="https://james-marktplatz.netlify.app/jarvis-iphone/store.mobileconfig">Holen</a>
+        </div>
+      </section>
+
+      <!-- Suche -->
+      <section class="view" id="view-search" aria-label="Suche" hidden>
+        <input class="search" id="search" type="search" placeholder="Apps und Fähigkeiten suchen" aria-label="Suchen" />
+        <div class="list" id="search-results"></div>
+      </section>
+
+      <!-- Bibliothek -->
+      <section class="view" id="view-library" aria-label="Bibliothek" hidden>
+        <h1 class="view-title">Bibliothek</h1>
+        <div class="list" id="library"></div>
+        <p class="empty" id="library-empty">Noch nichts geholt. Im Store auf „Holen“ tippen.</p>
+      </section>
+    </main>
+
+    <!-- Detailseite -->
+    <dialog class="detail" id="detail" aria-labelledby="detail-name">
+      <div class="detail-hero" id="detail-hero">
+        <button class="close" id="detail-close" type="button" aria-label="Zurück">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+        </button>
+      </div>
+      <div class="detail-body">
+        <div class="detail-head">
+          <img id="detail-icon" alt="" width="84" height="84" />
+          <div>
+            <h1 id="detail-name"></h1>
+            <p id="detail-tagline"></p>
+            <div class="chips" id="detail-chips"></div>
+          </div>
+        </div>
+        <div class="detail-actions" id="detail-actions"></div>
+        <ol class="howto" id="detail-howto" hidden>
+          <li>Safari fragt: <strong>Erlauben</strong>.</li>
+          <li><strong>Einstellungen</strong> öffnen → oben <strong>Profil geladen</strong>.</li>
+          <li><strong>Installieren</strong> – das Symbol liegt auf dem Home-Bildschirm.</li>
+        </ol>
+        <p class="detail-text" id="detail-text"></p>
+        <dl class="facts" id="detail-facts"></dl>
+      </div>
+    </dialog>
+
+    <nav class="tabbar" aria-label="Bereiche">
+      <button type="button" data-view="discover" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z" /></svg>Entdecken</button>
+      <button type="button" data-view="search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" /><path d="M16 16l5 5" /></svg>Suche</button>
+      <button type="button" data-view="library"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7.5" height="7.5" rx="2" /><rect x="13.5" y="3" width="7.5" height="7.5" rx="2" /><rect x="3" y="13.5" width="7.5" height="7.5" rx="2" /><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2" /></svg>Bibliothek</button>
+    </nav>
+
+    <script type="module" src="/src/storefront/main.ts"></script>
+  </body>
+</html>

@@ -23,17 +23,22 @@ const pages = 'https://nivarro-boop.github.io/jarvis-iphone'
 rmSync(out, { recursive: true, force: true })
 mkdirSync(`${out}jarvis-iphone`, { recursive: true })
 
+const icon = name => fileURLToPath(new URL(`../public/icons/${name}`, import.meta.url))
+writeFileSync(`${out}jarvis-iphone/james.mobileconfig`, webClipProfile({ url: `${pages}/`, iconFile: icon('apple-touch-icon.png') }))
 writeFileSync(
-  `${out}jarvis-iphone/james.mobileconfig`,
+  `${out}jarvis-iphone/store.mobileconfig`,
   webClipProfile({
-    url: `${pages}/`,
-    iconFile: fileURLToPath(new URL('../public/icons/apple-touch-icon.png', import.meta.url))
+    id: 'store',
+    label: 'James Store',
+    url: `${pages}/store/`,
+    iconFile: icon('store-180.png'),
+    description: 'Legt den James Store als App auf den Home-Bildschirm. Enthält nur Symbol und Adresse.'
   })
 )
 
 writeFileSync(
   `${out}_headers`,
-  `/jarvis-iphone/james.mobileconfig
+  `/jarvis-iphone/*.mobileconfig
   Content-Type: application/x-apple-aspen-config
   Cache-Control: no-cache
 `
@@ -42,7 +47,9 @@ writeFileSync(
 // Eigene Dateien gehen vor; alles andere kommt von GitHub Pages.
 writeFileSync(
   `${out}_redirects`,
-  `/                 /jarvis-iphone/marktplatz/     302
+  `/                 /jarvis-iphone/store/          302
+/store            /jarvis-iphone/store/          302
+/marktplatz       /jarvis-iphone/marktplatz/     302
 /laden            /jarvis-iphone/installieren/   302
 /uhr              /jarvis-iphone/uhr/            302
 /app              /jarvis-iphone/                302
