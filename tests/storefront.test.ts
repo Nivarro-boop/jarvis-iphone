@@ -24,7 +24,7 @@ describe('Store', () => {
     ;(document.querySelector('.tile') as HTMLElement).click()
     const dialog = document.querySelector('#detail')!
     expect(dialog.textContent).toContain('Web-App')
-    expect(dialog.querySelector<HTMLAnchorElement>('.detail-actions .get')!.href).toContain('/installieren/')
+    expect(dialog.querySelector<HTMLAnchorElement>('.detail-actions .get')!.href).toBe('https://james-marktplatz.netlify.app/jarvis-iphone/james.mobileconfig')
     expect(dialog.querySelector('#app-qr svg')).not.toBeNull()
   })
   it('lässt eine verspätete Windows-Antwort keine andere App überschreiben', async () => {
@@ -33,7 +33,7 @@ describe('Store', () => {
     tiles[0].click()
     releases.pending[0]({ version: '9.0.0', url: 'https://downloads.invalid/setup.exe', date: '2026-10-24', sizeMb: 5 })
     await Promise.resolve()
-    expect(document.querySelector<HTMLAnchorElement>('#detail-actions .get')!.href).toContain('/installieren/')
+    expect(document.querySelector<HTMLAnchorElement>('#detail-actions .get')!.href).toBe('https://james-marktplatz.netlify.app/jarvis-iphone/james.mobileconfig')
     expect(document.querySelector('#detail-name')!.textContent).toBe('iPhone App')
     expect(document.querySelector('#detail-facts')!.textContent).not.toContain('9.0.0')
   })

@@ -2,12 +2,13 @@ import { fetchCatalog, type AppEntry, type Catalog, type Skill } from '../market
 import { latestRelease } from '../market/releases'
 import { fetchRemote } from '../update'
 import { renderQr } from '../site/qr'
+import { installationTarget } from '../market/installation'
 import './store.css'
 
 /**
  * James Store — ein Store wie Epic oder der App Store, nur ohne App Store.
  *
- * Web-Apps öffnen eine Anleitung zum Home-Bildschirm; Profile sind optional.
+ * James bietet das Web-Clip-Profil direkt zum Download; die Anleitung bleibt erreichbar.
  * Für Windows öffnet der Store den neuesten
  * Installer aus den GitHub-Releases; für die Apple Watch die Anleitung zum
  * Siri-Kurzbefehl. Katalog und Versionen kommen live aus GitHub.
@@ -82,7 +83,8 @@ interface Action {
 function actionsFor(app: AppEntry): Action[] {
   const actions: Action[] = []
   if (app.kind === 'self') {
-    actions.push({ label: ios ? 'Zum Home-Bildschirm' : 'Am iPhone einrichten', href: `${appRoot}installieren/`, primary: true })
+    actions.push({ label: 'James herunterladen', href: installationTarget(appRoot, '').profile, primary: true })
+    actions.push({ label: 'So installierst du das Symbol', href: `${appRoot}installieren/` })
     actions.push({ label: 'Im Browser öffnen', href: appRoot })
   } else if (app.kind === 'guide' && app.url) {
     actions.push({ label: 'Einrichten', href: `${appRoot}${app.url}`, primary: true })
