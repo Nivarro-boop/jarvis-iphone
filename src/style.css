@@ -23,6 +23,8 @@
 html, body {
   margin: 0;
   height: 100%;
+  overflow: hidden;
+  touch-action: manipulation;
   background: var(--bg);
   color: var(--text);
   overscroll-behavior: none;
@@ -39,7 +41,7 @@ button { font: inherit; color: inherit; -webkit-tap-highlight-color: transparent
 svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 
 .app {
-  height: 100dvh;
+  height: var(--app-height, 100dvh);
   display: grid;
   grid-template-rows: auto 1fr auto auto auto;
   padding: calc(var(--safe-top) + 8px) 16px calc(var(--safe-bottom) + 12px);

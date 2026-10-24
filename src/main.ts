@@ -3,6 +3,8 @@ import { PROVIDERS, runTurn } from './ai/agent'
 import { ProviderError, type Message } from './ai/types'
 import { systemPrompt } from './prompt'
 import { Listener } from './speech/listen'
+import { Recorder } from './speech/record'
+import { transcriber } from './ai/transcribe'
 import { SentenceBuffer } from './speech/sentences'
 import { Speaker } from './speech/speak'
 import { loadHistory, loadMemory, loadSettings, saveHistory, type Settings } from './store'
@@ -47,6 +49,12 @@ document.addEventListener('keydown', () => (touched = true), { capture: true, on
 const orb = new Orb($<HTMLCanvasElement>('orb'))
 const speaker = new Speaker()
 const listener = new Listener()
+// KI-Diktat: Schlüssel und Modell erst beim Abschreiben lesen, sie können sich ändern.
+const recorder = new Recorder((audio, signal) =>
+  transcriber(settings.provider, settings.keys[settings.provider].trim(), settings.models[settings.provider])(audio, signal)
+)
+const useRecorder = () => settings.dictation === 'ki' && recorder.supported
+const canDictate = () => useRecorder() || listener.supported
 const timers = new Timers($('timers'), (label: string) => {
   const name = settings.userName.trim() || 'Hans'
   if (settings.speak) speaker.say(`${name}, dein Timer ${label === 'Timer' ? '' : `für ${label} `}ist abgelaufen.`)
@@ -124,7 +132,7 @@ function refreshSetup(): void {
   ui.welcome.hidden = !missing
   // Der Hinweis steht oben, die Begrüßung unten — beide dürfen gleichzeitig.
   ui.install.hidden = !wantsInstallHint()
-  ui.hint.textContent = missing ? '' : listener.supported ? 'Tippe auf die Kugel und sprich.' : 'Schreib James unten eine Nachricht.'
+  ui.hint.textContent = missing ? '' : canDictate() ? 'Tippe auf die Kugel und sprich.' : 'Schreib James unten eine Nachricht.'
   if (missing) setState('setup')
   else if (state === 'setup') setState('idle')
   else renderChips()
@@ -137,13 +145,35 @@ function refreshSetup(): void {
 function listen(): void {
   if (needsSetup()) return openSettings()
   stopAll()
-  if (!listener.supported) {
+  if (!canDictate()) {
     ui.text.focus()
     return
   }
   setState('listening')
   ui.you.textContent = ''
+  ui.answer.textContent = ''
+  ui.answer.classList.remove('error')
   ui.hint.textContent = 'Sprich jetzt — tippen beendet.'
+  if (useRecorder()) {
+    void recorder.start({
+      onPartial: () => undefined,
+      onLevel: level => orb.kick(level * 0.25),
+      onNoLevel: () => {
+        ui.hint.textContent = 'Sprich jetzt — zum Senden auf die Kugel tippen.'
+      },
+      onTranscribing: () => {
+        setState('thinking', 'Verstehe …')
+        ui.hint.textContent = ''
+      },
+      onFinal: text => {
+        ui.hint.textContent = ''
+        if (text) void ask(text)
+        else setState('idle', 'Nichts verstanden')
+      },
+      onError: message => showError(message)
+    })
+    return
+  }
   listener.start({
     onPartial: text => {
       ui.you.textContent = text
@@ -237,7 +267,7 @@ function finishTurn(): void {
 
 function afterAnswer(): void {
   setState('idle')
-  if (settings.conversation && listener.supported && document.visibilityState === 'visible') {
+  if (settings.conversation && canDictate() && document.visibilityState === 'visible') {
     setTimeout(() => {
       if (state === 'idle') listen()
     }, 350)
@@ -254,6 +284,7 @@ function showError(message: string): void {
 /** Alles anhalten: Zuhören, Denken, Sprechen. */
 function stopAll(): void {
   listener.abort()
+  recorder.abort()
   speaker.stop()
   turn?.abort()
   turn = null
@@ -267,7 +298,8 @@ function primaryAction(): void {
   speaker.unlock()
   timers.acknowledge()
   if (state === 'listening') {
-    listener.stop()
+    if (recorder.listening) recorder.stop()
+    else listener.stop()
     return
   }
   if (state === 'thinking' || state === 'speaking') {
@@ -500,6 +532,33 @@ $('install-close').addEventListener('click', () => {
   } catch {
     // egal
   }
+})
+
+// ─────────────────────────────────────────────────────────────
+// Tastatur am iPhone
+// ─────────────────────────────────────────────────────────────
+
+/**
+ * iOS schiebt beim Öffnen der Tastatur die ganze Seite nach oben, statt sie
+ * kleiner zu machen — Kopfzeile weg, Eingabe halb verdeckt, und nach dem
+ * Schließen bleibt alles verrutscht. Deshalb folgt die App der sichtbaren
+ * Fläche und schiebt die Seite immer wieder an den Anfang.
+ */
+const viewport = window.visualViewport
+if (viewport) {
+  const fit = () => {
+    document.documentElement.style.setProperty('--app-height', `${Math.round(viewport.height)}px`)
+    if (window.scrollY !== 0) window.scrollTo(0, 0)
+  }
+  viewport.addEventListener('resize', fit)
+  viewport.addEventListener('scroll', fit)
+  fit()
+}
+ui.text.addEventListener('blur', () => setTimeout(() => window.scrollTo(0, 0), 50))
+
+// Tippen soll immer gehen: Ohne Schlüssel erklärt die App, statt das Feld zu sperren.
+ui.text.addEventListener('focus', () => {
+  if (state === 'listening') stopAll()
 })
 
 // Wer die App verlässt, will nicht, dass James im Hintergrund weiterredet.

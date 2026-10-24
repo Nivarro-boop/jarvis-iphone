@@ -32,6 +32,7 @@ export function setupSettings({ get, set, speaker, onClearHistory }: Options): {
   const rateOut = field('rate-out')
   const speak = field<HTMLInputElement>('speak')
   const conversation = field<HTMLInputElement>('conversation')
+  const dictation = field<HTMLSelectElement>('dictation')
   const memory = field('memory')
   const known: Partial<Record<ProviderId, string[]>> = {}
   let checking: AbortController | null = null
@@ -131,6 +132,7 @@ export function setupSettings({ get, set, speaker, onClearHistory }: Options): {
   })
   speak.addEventListener('change', () => update(s => ({ ...s, speak: speak.checked })))
   conversation.addEventListener('change', () => update(s => ({ ...s, conversation: conversation.checked })))
+  dictation.addEventListener('change', () => update(s => ({ ...s, dictation: dictation.value === 'ios' ? 'ios' : 'ki' })))
   field('test-voice').addEventListener('click', () => {
     speaker.unlock()
     speaker.stop()
@@ -156,6 +158,7 @@ export function setupSettings({ get, set, speaker, onClearHistory }: Options): {
       rateOut.textContent = `${s.rate.toFixed(2)}×`
       speak.checked = s.speak
       conversation.checked = s.conversation
+      dictation.value = s.dictation
       fillVoices()
       fillMemory()
       dialog.showModal()

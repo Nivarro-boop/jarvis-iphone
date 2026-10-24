@@ -19,6 +19,8 @@ export interface Settings {
   speak: boolean
   /** Nach der Antwort gleich wieder zuhören — wie ein Gespräch. */
   conversation: boolean
+  /** `ki`: Aufnahme, Abschrift durch die KI (verlässlich). `ios`: Diktierfunktion des Browsers (live mitlesen). */
+  dictation: 'ki' | 'ios'
 }
 
 export const DEFAULT_MODELS: Record<ProviderId, string> = {
@@ -34,7 +36,8 @@ export const DEFAULT_SETTINGS: Settings = {
   voice: '',
   rate: 1.05,
   speak: true,
-  conversation: false
+  conversation: false,
+  dictation: 'ki'
 }
 
 const KEYS = { settings: 'james.settings.v1', history: 'james.history.v1', memory: 'james.memory.v1' }
@@ -66,6 +69,7 @@ export function loadSettings(): Settings {
     provider: saved.provider === 'openai' ? 'openai' : 'gemini',
     keys: { ...DEFAULT_SETTINGS.keys, ...saved.keys },
     models: { ...DEFAULT_SETTINGS.models, ...saved.models },
+    dictation: saved.dictation === 'ios' ? 'ios' : 'ki',
     rate: clamp(Number(saved.rate ?? DEFAULT_SETTINGS.rate), 0.7, 1.5)
   }
 }
