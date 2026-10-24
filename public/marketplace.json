@@ -17,7 +17,7 @@
       "id": "james-watch",
       "name": "James für Apple Watch",
       "platform": "Apple Watch",
-      "description": "„Hey Siri, frag James“ – James antwortet an der Uhr. Läuft als Siri-Kurzbefehl, Einrichtung in fünf Minuten.",
+      "description": "James über einen selbst eingerichteten Siri-Kurzbefehl auf der Apple Watch nutzen. Benötigt Netz und einen eigenen Gemini-API-Zugang; keine native Watch-App.",
       "kind": "guide",
       "url": "uhr/",
       "tagline": "„Hey Siri, frag James“ – am Handgelenk.",

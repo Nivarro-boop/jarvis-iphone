@@ -1,5 +1,11 @@
 # James – Jarvis fürs iPhone
 
+Marktplatz-Update: Installation über Safari steht im Vordergrund, Web-Clip-Profile
+sind optional. Der Store zeigt QR-Codes am Rechner, unterscheidet Web-App,
+Watch-Kurzbefehl und Windows-Installer und behauptet keinen erkannten
+Installationsstatus. Die Bibliothek merkt ausgewählte Apps und Downloads.
+Details: [Marktplatz-Prüfung](docs/MARKTPLATZ-INSTALLATION.md).
+
 Ein eigenständiger Sprachassistent fürs iPhone. Kugel antippen, sprechen,
 James antwortet laut. Kein Rechner nötig, kein eigener Server, kein Konto bei
 uns: Die App läuft komplett im iPhone und spricht direkt mit der gewählten KI.

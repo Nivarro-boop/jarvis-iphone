@@ -179,3 +179,14 @@ svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width:
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+.store-intro { margin: 22px 18px 26px; max-width: 640px; }
+.store-intro h1 { font-size: clamp(28px, 5vw, 44px); letter-spacing: -.04em; line-height: 1.1; margin: 12px 0; }
+.store-intro p, .library-hint { color: var(--dim); font-size: 14px; line-height: 1.6; }
+.library-hint { margin: 0 18px 20px; }
+.store-qr { display: grid; justify-items: center; gap: 8px; background: var(--surface); border-radius: 18px; padding: 18px; }
+.store-qr svg { width: min(240px, 100%); display: block; }
+.store-qr p { color: var(--dim); font-size: 12px; margin: 0; }
+.store :focus-visible { outline: 2px solid #7cc1ff; outline-offset: 4px; }
+
+.store-qr > div { width: min(240px, 100%); }
