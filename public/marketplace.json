@@ -5,14 +5,14 @@
       "id": "james-iphone",
       "name": "James für iPhone",
       "platform": "iPhone",
-      "description": "Diese App. Aktualisiert sich selbst, sobald auf GitHub eine neue Fassung liegt.",
+      "description": "Eigener Assistent am iPhone: spricht, merkt sich Dinge, liest und schreibt Gmail, verwaltet den Kalender – und steuert auf Wunsch James am PC fern. Aktualisiert sich selbst.",
       "kind": "self"
     },
     {
       "id": "james-windows",
       "name": "James für Windows",
       "platform": "Windows",
-      "description": "Der große Bruder am PC: steuert Programme, Browser, Mails und Kalender. Installer immer in der neuesten Fassung.",
+      "description": "Der große Bruder am PC: steuert Programme, Browser, Mails und Kalender. Vom iPhone aus fernbedienbar. Installer immer in der neuesten Fassung.",
       "kind": "github-release",
       "repo": "Nivarro-boop/James-Jarvis",
       "asset": "Setup.*\\.exe$"
@@ -26,7 +26,11 @@
       "category": "Alltag",
       "description": "Rezepte Schritt für Schritt, mit Mengen für die gewünschte Personenzahl und Timern zur richtigen Zeit.",
       "instructions": "Wenn es ums Kochen oder Backen geht: Frag zuerst, für wie viele Personen und was im Haus ist, wenn das unklar ist. Gib Rezepte nie auf einmal aus, sondern Schritt für Schritt; nach jedem Schritt fragst du, ob es weitergehen kann. Nenne Mengen in Gramm und Löffeln. Bietet sich eine Wartezeit an, stelle von dir aus einen Timer mit passender Bezeichnung.",
-      "examples": ["Was koche ich heute mit Nudeln und Zucchini?", "Nächster Schritt", "Pfannkuchen für vier Personen"],
+      "examples": [
+        "Was koche ich heute mit Nudeln und Zucchini?",
+        "Nächster Schritt",
+        "Pfannkuchen für vier Personen"
+      ],
       "author": "James-Team"
     },
     {
@@ -36,7 +40,11 @@
       "category": "Lernen",
       "description": "Gespräche auf Englisch mit sanften Korrekturen, Vokabeln und kurzen Übungen.",
       "instructions": "Wenn der Nutzer Englisch üben will: Führe das Gespräch auf einfachem Englisch, passend zu seinem Niveau. Korrigiere Fehler kurz und freundlich auf Deutsch, wiederhole dann den richtigen Satz auf Englisch. Biete gelegentlich ein neues Wort mit Beispiel an. Auf Wunsch kurze Abfragen mit drei Wörtern.",
-      "examples": ["Lass uns Englisch üben", "Frag mich fünf Vokabeln ab", "Wie sagt man Feierabend auf Englisch?"],
+      "examples": [
+        "Lass uns Englisch üben",
+        "Frag mich fünf Vokabeln ab",
+        "Wie sagt man Feierabend auf Englisch?"
+      ],
       "author": "James-Team"
     },
     {
@@ -46,7 +54,11 @@
       "category": "Produktiv",
       "description": "Pomodoro-Runden, Tagesplanung in drei Prioritäten und ein kurzer Rückblick am Abend.",
       "instructions": "Wenn der Nutzer planen oder sich konzentrieren will: Hilf ihm, höchstens drei Prioritäten für heute zu wählen, und merke dir diese mit dem Werkzeug merken, wenn er zustimmt. Für Fokusphasen stellst du 25-Minuten-Timer, danach 5 Minuten Pause. Abends fragst du, was geschafft wurde, ohne zu tadeln.",
-      "examples": ["Plan meinen Tag", "Starte eine Fokusrunde", "Was waren meine Prioritäten?"],
+      "examples": [
+        "Plan meinen Tag",
+        "Starte eine Fokusrunde",
+        "Was waren meine Prioritäten?"
+      ],
       "author": "James-Team"
     },
     {
@@ -56,7 +68,11 @@
       "category": "Gesundheit",
       "description": "Kurze Workouts ohne Geräte, angesagt mit Intervallen.",
       "instructions": "Wenn der Nutzer trainieren will: Frag nach Zeit und Fitnessstand, wenn unbekannt. Schlage ein kurzes Workout ohne Geräte vor. Sag jede Übung einzeln an, mit Ausführungstipp, und stelle für jede Übung bzw. Pause einen Timer. Bei Schmerzen rätst du zum Aufhören. Keine medizinischen Diagnosen.",
-      "examples": ["Zehn Minuten Workout", "Was mache ich gegen Rückenschmerzen vom Sitzen?", "Nächste Übung"],
+      "examples": [
+        "Zehn Minuten Workout",
+        "Was mache ich gegen Rückenschmerzen vom Sitzen?",
+        "Nächste Übung"
+      ],
       "author": "James-Team"
     },
     {
@@ -66,7 +82,11 @@
       "category": "Freizeit",
       "description": "Erzählt über Orte, Sehenswürdigkeiten und Geschichte, mit Wetter für den Reisetag.",
       "instructions": "Wenn es um Reiseziele oder Sehenswürdigkeiten geht: Nutze Wikipedia für Fakten und das Wetter-Werkzeug für die Vorhersage. Erzähle lebendig wie ein guter Stadtführer, mit einer überraschenden Anekdote. Empfiehl höchstens drei Dinge auf einmal.",
-      "examples": ["Was sollte ich in Triest anschauen?", "Erzähl mir was über den Stephansdom", "Wie wird das Wetter in Lissabon?"],
+      "examples": [
+        "Was sollte ich in Triest anschauen?",
+        "Erzähl mir was über den Stephansdom",
+        "Wie wird das Wetter in Lissabon?"
+      ],
       "author": "James-Team"
     },
     {
@@ -76,7 +96,11 @@
       "category": "Spiel",
       "description": "Wissensquiz zu jedem Thema, mit Punkten und Auflösung.",
       "instructions": "Wenn der Nutzer ein Quiz will: Frag nach Thema und Schwierigkeit. Stelle eine Frage nach der anderen mit drei Antwortmöglichkeiten A, B, C. Warte auf die Antwort, sag richtig oder falsch mit einem Satz Erklärung und nenne den Punktestand. Nach zehn Fragen gibt es ein Fazit.",
-      "examples": ["Quiz über Geografie", "Mach ein schweres Quiz über Filme", "B"],
+      "examples": [
+        "Quiz über Geografie",
+        "Mach ein schweres Quiz über Filme",
+        "B"
+      ],
       "author": "James-Team"
     },
     {
@@ -86,7 +110,11 @@
       "category": "Familie",
       "description": "Ruhige, selbst erfundene Geschichten für Kinder, auf Wunsch mit eigenen Figuren.",
       "instructions": "Wenn der Nutzer eine Gute-Nacht-Geschichte möchte: Erfinde eine ruhige, freundliche Geschichte ohne Gewalt oder Angst, etwa drei Minuten Vorlesezeit. Baue gewünschte Namen und Figuren ein. Sprich langsam, mit kurzen Sätzen, und ende sanft. Hier darfst du länger antworten als sonst.",
-      "examples": ["Erzähl eine Geschichte über einen Drachen namens Fritz", "Noch eine Geschichte", "Eine Geschichte über den Mond"],
+      "examples": [
+        "Erzähl eine Geschichte über einen Drachen namens Fritz",
+        "Noch eine Geschichte",
+        "Eine Geschichte über den Mond"
+      ],
       "author": "James-Team"
     },
     {
@@ -96,7 +124,11 @@
       "category": "Produktiv",
       "description": "Ehrliches Feedback zu Ideen, Plänen und Texten, mit Gegenargumenten.",
       "instructions": "Wenn der Nutzer eine Idee, einen Plan oder ein Vorhaben bespricht: Sei ein ehrlicher Sparringspartner. Nenne zuerst die stärkste Seite, dann die größte Schwäche und eine Frage, die er sich stellen sollte. Keine Schmeicheleien. Schlage einen konkreten nächsten Schritt vor.",
-      "examples": ["Was hältst du von meiner App-Idee?", "Spiel den Advocatus Diaboli", "Ist das ein guter Plan?"],
+      "examples": [
+        "Was hältst du von meiner App-Idee?",
+        "Spiel den Advocatus Diaboli",
+        "Ist das ein guter Plan?"
+      ],
       "author": "James-Team"
     }
   ]

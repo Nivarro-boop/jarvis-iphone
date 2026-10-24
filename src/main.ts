@@ -6,10 +6,12 @@ import { Listener } from './speech/listen'
 import { SentenceBuffer } from './speech/sentences'
 import { Speaker } from './speech/speak'
 import { loadHistory, loadMemory, loadSettings, saveHistory, type Settings } from './store'
-import { busyLabel, runTool, toolSpecs } from './tools'
+import { activeToolSpecs, busyLabel, runTool } from './tools'
 import { Orb, type OrbState } from './ui/orb'
 import { loadInstalled, skillsPrompt } from './market/installed'
 import { setupMarket } from './ui/market'
+import { PcMode, type PcView } from './ui/pcmode'
+import { accessToken, clientId, completeSignIn, redirectUri, setClientId, signedInOnce, signIn, signOut, validClientId } from './google/auth'
 import { setupSettings } from './ui/settings'
 import { Timers } from './ui/timers'
 import { renderTranscript } from './ui/transcript'
@@ -50,6 +52,11 @@ const timers = new Timers($('timers'), (label: string) => {
   if (settings.speak) speaker.say(`${name}, dein Timer ${label === 'Timer' ? '' : `für ${label} `}ist abgelaufen.`)
 })
 
+/** Wer antwortet: James hier auf dem iPhone, oder James am PC. */
+type Target = 'phone' | 'pc'
+let target: Target = 'phone'
+const pc = new PcMode(orb, view => renderPc(view))
+
 const STATUS: Record<OrbState, string> = {
   idle: 'Bereit',
   listening: 'Hört zu',
@@ -61,12 +68,15 @@ const STATUS: Record<OrbState, string> = {
 
 function setState(next: OrbState, label?: string): void {
   state = next
+  if (target === 'pc') return
   ui.app.dataset.state = next
   ui.status.textContent = label ?? STATUS[next]
   orb.set(next)
   ui.orbButton.setAttribute('aria-label', next === 'idle' || next === 'error' ? 'Sprechen' : 'Stopp')
   renderChips()
 }
+
+const PC_STARTERS = ['Was steht heute an?', 'Hab ich neue Mails?', 'Spiel Musik', 'Wie geht es dem PC?']
 
 const STARTERS = [
   'Wie wird das Wetter morgen?',
@@ -79,7 +89,11 @@ const STARTERS = [
 /** Antippbare Sätze: zum Einstieg Beispiele, nach einem Fehler „Nochmal“. */
 function renderChips(): void {
   const chips: { label: string; retry?: boolean; run(): void }[] = []
-  if (state === 'error' && lastQuestion) {
+  if (target === 'pc') {
+    if (pc.view().status === 'PC · bereit' && !ui.you.textContent) {
+      for (const label of PC_STARTERS) chips.push({ label, run: () => sendToPc(label) })
+    }
+  } else if (state === 'error' && lastQuestion) {
     chips.push({ label: 'Nochmal versuchen', retry: true, run: () => void ask(lastQuestion) })
   } else if (state === 'idle' && !ui.you.textContent && !needsSetup()) {
     const fromSkills = loadInstalled().map(s => s.examples[0]).filter(Boolean)
@@ -101,15 +115,15 @@ function renderChips(): void {
 }
 
 function needsSetup(): boolean {
-  return !settings.keys[settings.provider].trim()
+  // Im PC-Modus denkt der PC; dafür braucht das iPhone keinen eigenen Schlüssel.
+  return target === 'phone' && !settings.keys[settings.provider].trim()
 }
 
 function refreshSetup(): void {
   const missing = needsSetup()
   ui.welcome.hidden = !missing
-  // Erst einrichten, dann installieren — zwei Karten gleichzeitig wären zu viel.
-  if (missing) ui.install.hidden = true
-  else if (wantsInstallHint()) ui.install.hidden = false
+  // Der Hinweis steht oben, die Begrüßung unten — beide dürfen gleichzeitig.
+  ui.install.hidden = !wantsInstallHint()
   ui.hint.textContent = missing ? '' : listener.supported ? 'Tippe auf die Kugel und sprich.' : 'Schreib James unten eine Nachricht.'
   if (missing) setState('setup')
   else if (state === 'setup') setState('idle')
@@ -180,9 +194,18 @@ async function ask(question: string): Promise<void> {
       system: systemPrompt({ userName: settings.userName, memory: loadMemory(), skills: skillsPrompt() }),
       history,
       userText: text,
-      tools: toolSpecs,
+      tools: activeToolSpecs(),
       signal: controller.signal,
-      runTool: call => runTool(call.name, call.args, { signal: controller.signal, startTimer: (s, l) => timers.start(s, l) }),
+      runTool: call =>
+        runTool(call.name, call.args, {
+          signal: controller.signal,
+          startTimer: (s, l) => timers.start(s, l),
+          // Erst die laufende Ansage stoppen, dann fragen — sonst redet James über den Dialog hinweg.
+          confirm: async text => {
+            speaker.stop()
+            return window.confirm(text)
+          }
+        }),
       onText: delta => {
         ui.answer.textContent += delta
         ui.answer.parentElement!.scrollTop = ui.answer.parentElement!.scrollHeight
@@ -237,6 +260,10 @@ function stopAll(): void {
 }
 
 function primaryAction(): void {
+  if (target === 'pc') {
+    pc.press()
+    return
+  }
   speaker.unlock()
   timers.acknowledge()
   if (state === 'listening') {
@@ -255,8 +282,96 @@ function primaryAction(): void {
 // Bedienung
 // ─────────────────────────────────────────────────────────────
 
-ui.talk.addEventListener('click', primaryAction)
+ui.talk.addEventListener('click', () => {
+  // Im PC-Modus ist die Taste eine Sprechtaste (halten), siehe unten.
+  if (target === 'phone') primaryAction()
+})
 ui.orbButton.addEventListener('click', primaryAction)
+
+ui.talk.addEventListener('pointerdown', event => {
+  if (target !== 'pc') return
+  ui.talk.setPointerCapture(event.pointerId)
+  ui.you.textContent = ''
+  void pc.talkStart()
+})
+for (const type of ['pointerup', 'pointercancel'] as const) {
+  ui.talk.addEventListener(type, () => {
+    if (target === 'pc') pc.talkEnd()
+  })
+}
+document.addEventListener('pointerdown', () => {
+  if (target === 'pc') pc.unlockAudio()
+}, { capture: true })
+
+// ─────────────────────────────────────────────────────────────
+// PC-Modus
+// ─────────────────────────────────────────────────────────────
+
+function sendToPc(text: string): void {
+  pc.unlockAudio()
+  if (pc.sendText(text)) ui.you.textContent = text
+}
+
+function renderPc(view: PcView): void {
+  ui.app.dataset.state = view.look
+  ui.status.textContent = view.status
+  ui.answer.classList.remove('error')
+  ui.answer.textContent = view.note
+  ui.hint.textContent = view.status === 'PC · bereit' ? 'Taste halten und sprechen. Kugel antippen weckt oder unterbricht.' : ''
+  $('pc-status').textContent = pc.settingsStatus()
+  renderChips()
+}
+
+const modeSwitch = $('mode')
+function setTarget(next: Target): void {
+  if (next === 'pc' && !pc.paired) next = 'phone'
+  if (next === target && pc.active === (next === 'pc')) return
+  stopAll()
+  target = next
+  ui.app.dataset.target = next
+  try {
+    localStorage.setItem('james.target', next)
+  } catch {
+    // egal
+  }
+  for (const button of modeSwitch.querySelectorAll('button')) button.setAttribute('aria-checked', String(button.dataset.target === next))
+  ui.you.textContent = ''
+  ui.answer.textContent = ''
+  pc.setEnabled(next === 'pc')
+  if (next === 'phone') {
+    setState('idle')
+    refreshSetup()
+  } else {
+    ui.welcome.hidden = true
+  }
+}
+modeSwitch.addEventListener('click', event => {
+  const button = (event.target as HTMLElement).closest('button')
+  if (button?.dataset.target) setTarget(button.dataset.target as Target)
+})
+
+function refreshPcPairing(): void {
+  modeSwitch.hidden = !pc.paired
+  $('pc-status').textContent = pc.settingsStatus()
+  if (!pc.paired && target === 'pc') setTarget('phone')
+}
+
+$('pc-pair').addEventListener('click', () => {
+  const input = $<HTMLInputElement>('pc-link')
+  const result = pc.pair(input.value)
+  if (!result.ok) {
+    $('pc-status').textContent = result.error ?? ''
+    return
+  }
+  input.value = ''
+  refreshPcPairing()
+  setTarget('pc')
+})
+$('pc-unpair').addEventListener('click', () => {
+  if (!pc.paired || !confirm('Kopplung mit dem PC lösen?')) return
+  pc.unpair()
+  refreshPcPairing()
+})
 
 ui.text.addEventListener('input', () => ui.compose.classList.toggle('ready', ui.text.value.trim().length > 0))
 ui.compose.addEventListener('submit', event => {
@@ -266,7 +381,8 @@ ui.compose.addEventListener('submit', event => {
   ui.text.value = ''
   ui.compose.classList.remove('ready')
   ui.text.blur()
-  void ask(value)
+  if (target === 'pc') sendToPc(value)
+  else void ask(value)
 })
 
 const { open: openSettings } = setupSettings({
@@ -299,6 +415,66 @@ const linked = /^#skill=([a-z0-9-]{2,41})$/.exec(location.hash)?.[1]
 if (linked) {
   window.history.replaceState(null, '', location.pathname + location.search)
   market.open(linked)
+}
+
+// ─────────────────────────────────────────────────────────────
+// Google
+// ─────────────────────────────────────────────────────────────
+
+const googleStatus = $('google-status')
+function refreshGoogle(message?: string): void {
+  const input = $<HTMLInputElement>('google-client')
+  if (document.activeElement !== input) input.value = clientId()
+  $('google-origin').textContent = location.origin
+  $('google-redirect').textContent = redirectUri()
+  googleStatus.className = 'note'
+  if (message) googleStatus.textContent = message
+  else if (accessToken()) {
+    googleStatus.className = 'note ok'
+    googleStatus.textContent = 'Verbunden. Sag zum Beispiel: „Hab ich neue Mails?“'
+  } else if (signedInOnce()) googleStatus.textContent = 'Anmeldung abgelaufen – einmal „Mit Google anmelden“ tippen.'
+  else googleStatus.textContent = validClientId(clientId()) ? 'Bereit zum Anmelden.' : 'Noch nicht eingerichtet.'
+}
+$('google-client').addEventListener('change', () => {
+  const value = $<HTMLInputElement>('google-client').value.trim()
+  if (value && !validClientId(value)) return refreshGoogle('Das sieht nicht wie eine Client-ID aus (endet auf .apps.googleusercontent.com).')
+  setClientId(value)
+  refreshGoogle()
+})
+$('google-signin').addEventListener('click', () => {
+  const value = $<HTMLInputElement>('google-client').value.trim()
+  if (validClientId(value)) setClientId(value)
+  try {
+    signIn()
+  } catch (error) {
+    refreshGoogle(error instanceof Error ? error.message : String(error))
+  }
+})
+$('google-signout').addEventListener('click', () => {
+  signOut()
+  refreshGoogle('Abgemeldet.')
+})
+$('open-settings').addEventListener('click', () => refreshGoogle())
+const returned = completeSignIn()
+if (returned) {
+  refreshGoogle(returned.ok ? undefined : returned.error)
+  if (returned.ok) {
+    ui.answer.classList.remove('error')
+    ui.answer.textContent = 'Google ist verbunden. Frag mich nach deinen Mails oder Terminen.'
+  } else {
+    openSettings()
+  }
+}
+
+// Vom PC: …/jarvis-iphone/#pc=192.168.1.20:8788&token=…
+if (location.hash.startsWith('#pc=')) {
+  const link = location.hash
+  window.history.replaceState(null, '', location.pathname + location.search)
+  const host = new URLSearchParams(link.slice(1)).get('pc') ?? ''
+  if (confirm(`Mit James am PC (${host}) koppeln?`) && pc.pair(link).ok) {
+    refreshPcPairing()
+    setTarget('pc')
+  }
 }
 
 const historyDialog = $<HTMLDialogElement>('history')
@@ -338,9 +514,15 @@ speaker.voiceURI = settings.voice
 speaker.rate = settings.rate
 setState('idle')
 refreshSetup()
+refreshPcPairing()
+try {
+  if (localStorage.getItem('james.target') === 'pc') setTarget('pc')
+} catch {
+  // egal
+}
 
 watchForUpdates({
-  busy: () => !['idle', 'setup', 'error'].includes(state) || !!document.querySelector('dialog[open]'),
+  busy: () => target === 'pc' || !['idle', 'setup', 'error'].includes(state) || !!document.querySelector('dialog[open]'),
   touched: () => touched,
   onAvailable: remote => {
     $('update-text').textContent = `Neue Version ${remote.version} ist da`

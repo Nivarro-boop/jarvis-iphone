@@ -41,6 +41,10 @@
       </header>
 
       <section class="stage">
+        <div class="mode" id="mode" role="radiogroup" aria-label="Wer antwortet" hidden>
+          <button type="button" role="radio" data-target="phone" aria-checked="true">iPhone</button>
+          <button type="button" role="radio" data-target="pc" aria-checked="false">PC</button>
+        </div>
         <button class="orb-button" id="orb-button" type="button" aria-label="Sprechen">
           <canvas id="orb" aria-hidden="true"></canvas>
         </button>
@@ -119,6 +123,46 @@
             </div>
           </label>
           <p class="note" id="model-status"></p>
+        </fieldset>
+
+        <fieldset>
+          <legend>Google: Gmail und Kalender</legend>
+          <p class="note">James liest und schreibt Mails und Termine direkt vom iPhone – über dein eigenes Google-Projekt, ohne fremden Server.</p>
+          <label class="field">
+            <span>Client-ID</span>
+            <input id="google-client" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="….apps.googleusercontent.com" />
+          </label>
+          <div class="row">
+            <button class="text-button" id="google-signin" type="button">Mit Google anmelden</button>
+            <button class="text-button danger" id="google-signout" type="button">Abmelden</button>
+          </div>
+          <p class="note" id="google-status"></p>
+          <details class="note">
+            <summary>Einmal einrichten (5 Minuten, am PC am einfachsten)</summary>
+            <ol>
+              <li><a href="https://console.cloud.google.com/projectcreate" target="_blank" rel="noopener">Google Cloud Console</a>: neues Projekt „James“.</li>
+              <li>APIs aktivieren: <a href="https://console.cloud.google.com/apis/library/gmail.googleapis.com" target="_blank" rel="noopener">Gmail API</a> und <a href="https://console.cloud.google.com/apis/library/calendar-json.googleapis.com" target="_blank" rel="noopener">Google Calendar API</a>.</li>
+              <li>OAuth-Zustimmungsbildschirm: Extern, Status „Test“, deine Gmail-Adresse als Testnutzer.</li>
+              <li>Anmeldedaten → OAuth-Client-ID → Webanwendung. Autorisierter JavaScript-Ursprung und Weiterleitungs-URI genau so eintragen:<br /><code id="google-origin"></code><br /><code id="google-redirect"></code></li>
+              <li>Client-ID hier einfügen, „Mit Google anmelden“.</li>
+            </ol>
+            <p>Eine Anmeldung gilt eine Stunde; danach reicht ein Tipp auf „Mit Google anmelden“.</p>
+          </details>
+        </fieldset>
+
+        <fieldset>
+          <legend>PC</legend>
+          <p class="note">James am PC vom iPhone aus steuern: sprechen, tippen, Antworten hören. Dort hat er Gmail, Kalender, Browser und Programme.</p>
+          <label class="field">
+            <span>Kopplungslink vom PC</span>
+            <input id="pc-link" type="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="https://…#host=…&amp;token=…" />
+          </label>
+          <div class="row">
+            <button class="text-button" id="pc-pair" type="button">Koppeln</button>
+            <button class="text-button danger" id="pc-unpair" type="button">Trennen</button>
+          </div>
+          <p class="note" id="pc-status"></p>
+          <p class="note">Den Link gibt es am PC unter Einstellungen → Telefon. Das iPhone muss im selben WLAN sein (oder über Tailscale verbunden) und dem Zertifikat des PCs vertrauen; der erste QR-Code dort richtet das ein.</p>
         </fieldset>
 
         <fieldset>

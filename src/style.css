@@ -81,6 +81,17 @@ svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width:
 #orb { width: 100%; height: 100%; display: block; }
 .hint { margin: 0; color: var(--dim); font-size: 14px; min-height: 20px; text-align: center; transition: opacity 0.3s; }
 
+.mode {
+  display: inline-grid; grid-template-columns: 1fr 1fr; padding: 3px; border-radius: 999px;
+  background: var(--panel); border: 1px solid var(--line); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+}
+.mode button { border: 0; background: transparent; color: var(--dim); font-weight: 600; font-size: 14px; padding: 7px 18px; border-radius: 999px; }
+.mode button[aria-checked='true'] { background: #1d2a3d; color: var(--text); }
+[data-target='pc'] .talk { touch-action: none; -webkit-user-select: none; user-select: none; }
+/* Im PC-Modus bleibt die Taste eine Sprechtaste; anhalten geht über die Kugel. */
+[data-target='pc'][data-state='thinking'] .talk .mic, [data-target='pc'][data-state='speaking'] .talk .mic { display: block; }
+[data-target='pc'][data-state='thinking'] .talk .stop, [data-target='pc'][data-state='speaking'] .talk .stop { display: none; }
+
 /* ── Untertitel ────────────────────────────── */
 
 .caption { min-height: 96px; max-height: 32dvh; overflow-y: auto; padding: 4px 4px 12px; text-align: center; scrollbar-width: none; }
@@ -224,6 +235,9 @@ legend { float: left; width: 100%; padding: 0; margin-bottom: 2px; color: var(--
 .note { margin: 0; color: var(--dim); font-size: 13px; line-height: 1.45; }
 .note.ok { color: #3ddc97; }
 .note.bad { color: var(--warn); }
+details.note summary { cursor: pointer; color: var(--accent-2); }
+details.note ol { padding-left: 18px; margin: 8px 0; display: grid; gap: 6px; }
+details.note code { font-size: 12px; word-break: break-all; color: var(--text); }
 .note.small { font-size: 12px; padding: 0 4px; }
 .note a { color: var(--accent-2); }
 

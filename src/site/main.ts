@@ -1,8 +1,8 @@
-import qrcode from 'qrcode-generator'
 import { fetchCatalog, type AppEntry, type Catalog, type Skill } from '../market/catalog'
 import { latestRelease } from '../market/releases'
 import { Orb, type OrbState } from '../ui/orb'
 import { fetchRemote } from '../update'
+import { renderQr } from './qr'
 import './site.css'
 
 /**
@@ -38,18 +38,8 @@ if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
   setInterval(() => orb.set(demo[++step % demo.length]), 2600)
 }
 
-function renderQr(target: HTMLElement, text: string): void {
-  const qr = qrcode(0, 'M')
-  qr.addData(text)
-  qr.make()
-  const size = qr.getModuleCount()
-  let path = ''
-  for (let r = 0; r < size; r++) {
-    for (let c = 0; c < size; c++) if (qr.isDark(r, c)) path += `M${c} ${r}h1v1h-1z`
-  }
-  target.innerHTML = `<svg viewBox="-2 -2 ${size + 4} ${size + 4}" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><rect x="-2" y="-2" width="${size + 4}" height="${size + 4}" fill="#fff" rx="2"/><path d="${path}" fill="#05070b"/></svg>`
-}
-renderQr($('qr'), appUrl)
+// Der QR-Code führt zur Installationsseite: Die erklärt am iPhone die drei Tipps.
+renderQr($('qr'), new URL('installieren/', appUrl).href)
 
 // ─────────────────────────────────────────────────────────────
 // Apps
@@ -59,7 +49,10 @@ function appCard(app: AppEntry): HTMLElement {
   const meta = el('p', { className: 'meta', textContent: 'Prüfe Version …' })
   const actions = el('div', { className: 'actions' })
   if (app.kind === 'self') {
-    actions.append(el('a', { className: 'button primary', href: appUrl, textContent: 'Öffnen' }))
+    actions.append(
+      el('a', { className: 'button', href: appUrl, textContent: 'Öffnen' }),
+      el('a', { className: 'button primary', href: `${appUrl}installieren/`, textContent: 'Runterladen' })
+    )
     void fetchRemote(base).then(remote => {
       meta.textContent = remote ? `Version ${remote.version} · ${dateDe(remote.date)}` : 'Web-App, immer aktuell'
     })

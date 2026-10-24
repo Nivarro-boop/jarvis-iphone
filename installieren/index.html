@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>James laden</title>
+    <meta name="description" content="James aufs iPhone holen – in drei Schritten, ohne App Store." />
+    <meta name="theme-color" content="#05070b" />
+    <meta property="og:title" content="James laden" />
+    <meta property="og:description" content="James aufs iPhone holen – in drei Schritten, ohne App Store." />
+    <meta property="og:image" content="https://nivarro-boop.github.io/jarvis-iphone/icons/icon-512-opaque.png" />
+    <link rel="icon" type="image/png" href="../icons/icon-192.png" />
+    <link rel="apple-touch-icon" href="../icons/apple-touch-icon.png" />
+    <link rel="manifest" href="../manifest.webmanifest" />
+  </head>
+  <body class="site">
+    <header class="nav">
+      <a class="brand" href="../marktplatz/">
+        <img src="../icons/icon-192.png" alt="" width="32" height="32" />
+        <span>James <em>laden</em></span>
+      </a>
+      <nav aria-label="Bereiche">
+        <a href="../marktplatz/">Marktplatz</a>
+      </nav>
+    </header>
+
+    <main class="install-page">
+      <section class="install-hero">
+        <img class="app-icon" src="../icons/apple-touch-icon.png" alt="" width="96" height="96" />
+        <h1>James fürs iPhone</h1>
+        <p class="lead" id="install-lead">Eine Web-App: kein App Store, kein Konto, immer die neueste Fassung.</p>
+      </section>
+
+      <!-- iPhone in Safari -->
+      <section class="steps" id="ios-safari" hidden>
+        <ol>
+          <li><span class="num">1</span><div><strong>James öffnen</strong><br /><small>mit dem Knopf unten – dort weitermachen</small></div><img src="../icons/icon-192.png" alt="" width="28" height="28" /></li>
+          <li><span class="num">2</span><div><strong>Teilen</strong> antippen<br /><small>das Quadrat mit dem Pfeil, unten in der Leiste</small></div><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3M7.5 7.5L12 3l4.5 4.5M6 11H5v10h14V11h-1" /></svg></li>
+          <li><span class="num">3</span><div><strong>Zum Home-Bildschirm</strong> → Hinzufügen<br /><small>eventuell etwas nach unten wischen</small></div><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4" /><path d="M12 8.5v7M8.5 12h7" /></svg></li>
+        </ol>
+        <a class="button primary wide" href="../">James öffnen</a>
+        <p class="fine">Wichtig: erst in James die Schritte 2 und 3 machen, nicht auf dieser Seite – sonst landet nur diese Anleitung auf dem Home-Bildschirm.</p>
+      </section>
+
+      <!-- iPhone, aber nicht in Safari -->
+      <section class="steps" id="ios-other" hidden>
+        <p class="lead">Bitte diese Seite in <strong>Safari</strong> öffnen. Nur Safari kann Web-Apps auf den Home-Bildschirm legen.</p>
+        <button class="button primary" id="copy-link" type="button">Link kopieren</button>
+      </section>
+
+      <!-- Am Computer -->
+      <section class="steps desktop" id="desktop" hidden>
+        <figure class="qr big">
+          <div id="qr" role="img" aria-label="QR-Code zur Installationsseite"></div>
+          <figcaption>Mit der iPhone-Kamera scannen</figcaption>
+        </figure>
+        <div>
+          <h2>Am iPhone weitermachen</h2>
+          <p>QR-Code mit der Kamera scannen. Auf dem iPhone erklärt dann diese Seite die drei Tipps.</p>
+          <h2>Für diesen PC</h2>
+          <p>James für Windows steuert Programme, Browser, Mails und Kalender – und lässt sich vom iPhone aus fernbedienen.</p>
+          <a class="button primary" id="windows-download" href="https://github.com/Nivarro-boop/James-Jarvis/releases/latest">James für Windows laden</a>
+        </div>
+      </section>
+
+      <section class="block why">
+        <h2>Warum nicht aus dem App Store?</h2>
+        <p>Für den App Store braucht es ein Apple-Entwicklerkonto und eine Prüfung durch Apple – das kommt. Bis dahin ist James eine Web-App: Sie startet wie eine App, im Vollbild, mit eigenem Symbol, und aktualisiert sich selbst, sobald es eine neue Fassung gibt.</p>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>James · Alle Rechte vorbehalten</span>
+      <nav aria-label="Rechtliches"><a href="../datenschutz/">Datenschutz</a></nav>
+    </footer>
+    <script type="module" src="/src/site/install.ts"></script>
+  </body>
+</html>

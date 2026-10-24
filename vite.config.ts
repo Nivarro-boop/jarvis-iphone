@@ -48,12 +48,13 @@ export default defineConfig({
   build: {
     target: 'safari16',
     sourcemap: true,
-    // App, Marktplatz-Website und Datenschutz – ein Build, ein Deploy.
+    // App, Marktplatz-Website, Installationsseite und Datenschutz – ein Build, ein Deploy.
     rollupOptions: {
       input: {
         app: fileURLToPath(new URL('./index.html', import.meta.url)),
         marktplatz: fileURLToPath(new URL('./marktplatz/index.html', import.meta.url)),
-        datenschutz: fileURLToPath(new URL('./datenschutz/index.html', import.meta.url))
+        datenschutz: fileURLToPath(new URL('./datenschutz/index.html', import.meta.url)),
+        installieren: fileURLToPath(new URL('./installieren/index.html', import.meta.url))
       }
     }
   },

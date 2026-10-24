@@ -18,6 +18,14 @@ verkaufbar. Jetzt als Web-App, damit es ohne Apple-Entwicklerkonto testbar ist.
 - Nicht geprüft: echtes iPhone, echte Spracherkennung in Safari, echte
   Schlüssel bei Gemini/OpenAI.
 
+## Neu seit 0.2
+
+- PC-Modus: Fernbedienung für James am PC über `wss://` (Protokoll wie
+  `src/shared/companion.ts` im Windows-Projekt), Push-to-talk mit 16-kHz-PCM.
+- Gmail und Kalender über OAuth im Browser (Implicit Flow, eigenes Google-Projekt
+  des Nutzers, Token 1 Stunde, kein Server).
+- Marktplatz-Website, Installationsseite, Datenschutz.
+
 ## Fragen, zu denen eine Meinung hilft
 
 1. **Weg in den App Store:** Capacitor um diese Web-App (Plan in

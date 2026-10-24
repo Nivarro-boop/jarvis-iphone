@@ -139,6 +139,32 @@ h2 { margin: 0; font-size: 28px; letter-spacing: -0.02em; }
 .footer nav { display: flex; gap: 16px; }
 .footer a { color: var(--dim); }
 
+/* ── Installationsseite ─────────────────── */
+
+.install-page { max-width: 720px; }
+.install-hero { text-align: center; padding: 48px 0 24px; display: grid; justify-items: center; gap: 8px; }
+.app-icon { border-radius: 22px; box-shadow: 0 16px 48px rgba(42, 116, 224, 0.35); }
+.install-hero .lead { margin: 0 auto; }
+.steps ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.steps li {
+  display: grid; grid-template-columns: 40px 1fr auto; align-items: center; gap: 14px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px;
+  font-size: 17px;
+}
+.steps li small { color: var(--dim); font-size: 14px; }
+.steps li svg { width: 28px; height: 28px; fill: none; stroke: var(--accent-2); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.steps li img { border-radius: 7px; }
+.num { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: #04101f; font-weight: 700; }
+.steps .fine { text-align: center; }
+.button.wide { width: 100%; margin-top: 16px; min-height: 52px; font-size: 17px; }
+.steps.desktop { display: grid; grid-template-columns: auto 1fr; gap: 32px; align-items: start; }
+.steps.desktop h2 { font-size: 20px; margin: 0 0 6px; }
+.steps.desktop p { color: var(--dim); margin: 0 0 18px; }
+.qr.big { position: static; width: 220px; }
+.qr.big svg { width: 190px; height: 190px; }
+.why { margin-top: 32px; }
+.why p { color: var(--dim); }
+
 /* ── Textseiten (Datenschutz) ───────────── */
 
 .prose { max-width: 720px; margin: 0 auto; padding: 48px 16px; }
@@ -155,6 +181,7 @@ h2 { margin: 0; font-size: 28px; letter-spacing: -0.02em; }
   .qr { display: none; }
   .nav nav a:not([href^='#']) { display: none; }
   .timeline li { grid-template-columns: 1fr; gap: 2px; }
+  .steps.desktop { grid-template-columns: 1fr; justify-items: center; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -4,8 +4,9 @@ Ein eigenständiger Sprachassistent fürs iPhone. Kugel antippen, sprechen,
 James antwortet laut. Kein Rechner nötig, kein eigener Server, kein Konto bei
 uns: Die App läuft komplett im iPhone und spricht direkt mit der gewählten KI.
 
-**Ausprobieren:** https://nivarro-boop.github.io/jarvis-iphone/ in Safari
-öffnen → Teilen → **Zum Home-Bildschirm**. Danach startet James wie eine App,
+**Laden:** https://nivarro-boop.github.io/jarvis-iphone/installieren/ – zeigt am
+iPhone die drei Tipps (James öffnen → Teilen → **Zum Home-Bildschirm**), am PC
+einen QR-Code und den Windows-Installer. Danach startet James wie eine App,
 im Vollbild und mit eigenem Symbol.
 
 **Marktplatz-Website:** https://nivarro-boop.github.io/jarvis-iphone/marktplatz/
@@ -27,6 +28,14 @@ Das hier ist bewusst eigenständig und teilt keinen Code.
 - **Gedächtnis.** „Merk dir, dass …“ – bleibt auf dem iPhone, jederzeit löschbar.
 - **Zwei KI-Anbieter:** Google Gemini (kostenloser Schlüssel) oder OpenAI.
   Modelle werden aus dem eigenen Konto geladen.
+- **Gmail und Google-Kalender** direkt vom iPhone: Mails suchen, vorlesen,
+  schreiben; Termine abfragen und eintragen. Senden und Eintragen nur nach
+  Bestätigung auf dem Bildschirm. Läuft über das eigene Google-Projekt
+  (Einstellungen → Google, Anleitung dort).
+- **PC-Modus:** Oben zwischen „iPhone“ und „PC“ umschalten. Dann ist das
+  iPhone Mikrofon, Lautsprecher und Fernbedienung für James am PC – mit allem,
+  was der dort kann (Programme, Browser, Dateien, Mails). Koppeln über den
+  QR-Code „Mit der James-App koppeln“ am PC (Einstellungen → Telefon).
 - Tippen geht immer, auch ohne Mikrofon.
 - **Marktplatz** (Symbol oben): Fähigkeiten wie Kochassistent, Englisch-Trainer,
   Fokus-Coach, Quizmaster mit einem Tipp installieren; dazu die Apps der
@@ -101,6 +110,9 @@ veröffentlichte Seite nehmen oder einen HTTPS-Tunnel.
 | `public/marketplace.json` | Der Katalog des Marktplatzes |
 | `marktplatz/`, `src/site/` | Marktplatz-Website |
 | `datenschutz/` | Datenschutzerklärung (auch für den App Store) |
+| `installieren/` | „Runterladen“: Installationsweg je nach Gerät |
+| `src/pc/`, `src/ui/pcmode.ts` | PC-Modus: Verbindung, Ton, Kopplung |
+| `src/google/` | Google-Anmeldung, Gmail, Kalender |
 | `src/store.ts` | Einstellungen, Verlauf, Gedächtnis (localStorage) |
 | `public/` | Manifest, Service Worker, Symbole |
 | `docs/` | Architektur, Weg in den App Store, offene Fragen |
