@@ -46,7 +46,7 @@ const LOOKS: Partial<Record<PcState, OrbState>> = {
 }
 
 const OFFLINE_HELP =
-  'PC nicht erreichbar. Läuft James am PC, und ist unter Einstellungen → Telefon die Fernbedienung an? ' +
+  'PC nicht erreichbar. Läuft James am PC, und ist dort unter Menü → iPhone & Apple Watch die Fernbedienung an? ' +
   'Das iPhone muss im selben WLAN sein (oder im Tailnet) und dem Zertifikat des PCs vertrauen.'
 
 export class PcMode {
@@ -84,7 +84,7 @@ export class PcMode {
 
   pair(input: string): { ok: boolean; error?: string } {
     const pairing = parsePcLink(input)
-    if (!pairing) return { ok: false, error: 'Das ist kein Kopplungslink vom PC. Er steht am PC unter Einstellungen → Telefon.' }
+    if (!pairing) return { ok: false, error: 'Das ist kein Kopplungslink vom PC. Er steht am PC unter Menü → iPhone & Apple Watch.' }
     this.pairing = pairing
     savePcPairing(pairing)
     if (this.enabled) this.restart()
@@ -115,7 +115,7 @@ export class PcMode {
     this.link?.stop()
     if (!this.pairing) {
       this.linkStatus = 'off'
-      this.note = 'Noch kein PC gekoppelt. Einstellungen → PC.'
+      this.note = 'Noch kein PC gekoppelt: Einstellungen → PC koppeln.'
       this.update()
       return
     }

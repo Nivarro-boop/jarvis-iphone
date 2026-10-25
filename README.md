@@ -57,8 +57,12 @@ Das hier ist bewusst eigenständig und teilt keinen Code.
 - **PC-Modus:** Oben zwischen „iPhone“ und „PC“ umschalten. Dann ist das
   iPhone Mikrofon, Lautsprecher und Fernbedienung für James am PC – mit allem,
   was der dort kann (Programme, Browser, Dateien, Mails). Koppeln über den
-  QR-Code „Mit der James-App koppeln“ am PC (Einstellungen → Telefon).
+  QR-Code am PC (Menü → iPhone & Apple Watch), Adresse in James unter Einstellungen → PC koppeln einfügen.
 - Tippen geht immer, auch ohne Mikrofon.
+- **Einstellungen wie in iOS:** oben der Stand („James ist bereit“ oder was
+  fehlt), darunter „Auf dem iPhone“ (KI, Stimme, Gmail & Kalender, Du &
+  Gedächtnis) und „Mit dem PC“ (Koppeln, Windows-Installer). Jede Zeile zeigt
+  ihren Stand und öffnet ihre Seite.
 - **Marktplatz** (Symbol oben): Fähigkeiten wie Kochassistent, Englisch-Trainer,
   Fokus-Coach, Quizmaster mit einem Tipp installieren; dazu die Apps der
   James-Familie (Windows-Installer immer in der neuesten Fassung aus den

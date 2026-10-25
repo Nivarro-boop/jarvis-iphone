@@ -3,12 +3,25 @@ import type { ProviderId } from '../ai/types'
 import type { Speaker } from '../speech/speak'
 import { clearAll, loadMemory, saveSettings, type Settings } from '../store'
 
+/** Eine Zeile der Übersicht: kurzer Stand, `bad` färbt sie als offen. */
+export interface Summary {
+  text: string
+  bad?: boolean
+}
+
+export type SettingsPage = 'home' | 'ki' | 'stimme' | 'google' | 'du' | 'pc'
+
 interface Options {
   get(): Settings
   set(next: Settings): void
   speaker: Speaker
   onClearHistory(): void
+  /** Stand der Teile, die nicht in diesem Modul leben. */
+  summaries: { google(): Summary; pc(): Summary; store(): Summary; version: string }
+  onOpenStore(): void
 }
+
+const PROVIDER_NAMES: Record<ProviderId, string> = { gemini: 'Gemini', openai: 'OpenAI' }
 
 const KEY_HELP: Record<ProviderId, string> = {
   gemini:
@@ -17,7 +30,7 @@ const KEY_HELP: Record<ProviderId, string> = {
     'Von <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">platform.openai.com/api-keys</a>. Kostet pro Nutzung und braucht Guthaben; ein ChatGPT-Abo zählt dafür nicht.'
 }
 
-export function setupSettings({ get, set, speaker, onClearHistory }: Options): { open(): void } {
+export function setupSettings({ get, set, speaker, onClearHistory, summaries, onOpenStore }: Options): { open(page?: SettingsPage): void } {
   const dialog = document.getElementById('settings') as HTMLDialogElement
   const form = document.getElementById('settings-form') as HTMLFormElement
   const field = <T extends HTMLElement>(id: string) => document.getElementById(id) as T
@@ -61,8 +74,93 @@ export function setupSettings({ get, set, speaker, onClearHistory }: Options): {
   }
 
   function fillMemory(): void {
-    memory.replaceChildren(...loadMemory().map(fact => Object.assign(document.createElement('li'), { textContent: fact })))
+    const facts = loadMemory()
+    memory.replaceChildren(...facts.map(fact => Object.assign(document.createElement('li'), { textContent: fact })))
+    field('memory-empty').hidden = facts.length > 0
   }
+
+  // ── Übersicht und Seiten ──────────────────────────────────────
+  // Wie die iOS-Einstellungen: oben der Stand, darunter iPhone und PC als
+  // Gruppen; jede Zeile öffnet ihre Seite, „Zurück“ führt zur Übersicht.
+
+  const pages = [...form.querySelectorAll<HTMLElement>('.set-page')]
+  const back = field<HTMLButtonElement>('settings-back')
+  const title = field('settings-title')
+  const needsKey = () => !get().keys[get().provider].trim()
+  let page: SettingsPage = 'home'
+
+  function summary(name: Exclude<SettingsPage, 'home'>): Summary {
+    const s = get()
+    switch (name) {
+      case 'ki':
+        return needsKey() ? { text: 'Schlüssel fehlt', bad: true } : { text: `${PROVIDER_NAMES[s.provider]} · ${s.models[s.provider]}` }
+      case 'stimme':
+        return { text: `${s.dictation === 'ki' ? 'KI-Diktat' : 'Browser-Diktat'} · ${s.speak ? `${s.rate.toFixed(2).replace('.', ',')}×` : 'stumm'}` }
+      case 'du': {
+        const count = loadMemory().length
+        return { text: `${s.userName || 'Hans'} · ${count ? `${count} gemerkt` : 'nichts gemerkt'}` }
+      }
+      case 'google':
+        return summaries.google()
+      case 'pc':
+        return summaries.pc()
+    }
+  }
+
+  function renderHome(): void {
+    for (const name of ['ki', 'stimme', 'google', 'du', 'pc'] as const) {
+      const value = field(`sum-${name}`)
+      const result = summary(name)
+      value.textContent = result.text
+      value.classList.toggle('bad', Boolean(result.bad))
+    }
+    field('sum-store').textContent = summaries.store().text
+    field('sum-version').textContent = summaries.version
+    const status = field('set-status')
+    status.className = needsKey() ? 'set-status bad' : 'set-status ok'
+    status.textContent = needsKey() ? 'Noch zu tun: KI-Schlüssel einfügen. Danach kann James antworten.' : 'James ist bereit.'
+  }
+
+  function show(next: SettingsPage): void {
+    page = next
+    for (const section of pages) section.hidden = section.dataset.page !== next
+    back.hidden = next === 'home'
+    title.textContent = next === 'home' ? 'Einstellungen' : (pages.find(p => p.dataset.page === next)?.dataset.title ?? '')
+    if (next === 'home') renderHome()
+    dialog.scrollTop = 0
+  }
+
+  form.addEventListener('click', event => {
+    const row = (event.target as HTMLElement).closest<HTMLButtonElement>('button.set-row[data-page]')
+    if (row) show(row.dataset.page as SettingsPage)
+  })
+  back.addEventListener('click', () => show('home'))
+  field('settings-store').addEventListener('click', () => {
+    dialog.close()
+    onOpenStore()
+  })
+  // Escape führt von einer Seite erst zur Übersicht.
+  dialog.addEventListener('cancel', event => {
+    if (page === 'home') return
+    event.preventDefault()
+    show('home')
+  })
+
+  field('key-show').addEventListener('click', () => {
+    const visible = key.type === 'text'
+    key.type = visible ? 'password' : 'text'
+    field('key-show').textContent = visible ? 'Anzeigen' : 'Verbergen'
+  })
+  field('key-paste').addEventListener('click', async () => {
+    try {
+      key.value = (await navigator.clipboard.readText()).trim()
+      key.dispatchEvent(new Event('change'))
+    } catch {
+      key.focus()
+      modelStatus.className = 'note'
+      modelStatus.textContent = 'Einfügen ging nicht automatisch – ins Feld tippen und „Einsetzen“ wählen.'
+    }
+  })
 
   function showProvider(): void {
     const s = get()
@@ -150,8 +248,9 @@ export function setupSettings({ get, set, speaker, onClearHistory }: Options): {
   if ('speechSynthesis' in window) speechSynthesis.addEventListener('voiceschanged', fillVoices)
 
   return {
-    open() {
+    open(start?: SettingsPage) {
       const s = get()
+      show(start ?? (needsKey() ? 'ki' : 'home'))
       showProvider()
       userName.value = s.userName
       rate.value = String(s.rate)
@@ -161,8 +260,8 @@ export function setupSettings({ get, set, speaker, onClearHistory }: Options): {
       dictation.value = s.dictation
       fillVoices()
       fillMemory()
-      dialog.showModal()
-      if (!s.keys[s.provider]) key.focus()
+      if (!dialog.open) dialog.showModal()
+      if (page === 'ki' && !s.keys[s.provider]) key.focus()
       else if (!known[s.provider]) void check()
     }
   }

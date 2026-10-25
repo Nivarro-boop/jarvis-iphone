@@ -13,11 +13,12 @@ import { Orb, type OrbState } from './ui/orb'
 import { loadInstalled, skillsPrompt } from './market/installed'
 import { setupMarket } from './ui/market'
 import { PcMode, type PcView } from './ui/pcmode'
+import { parsePcLink } from './pc/pairing'
 import { accessToken, clientId, completeSignIn, redirectUri, setClientId, signedInOnce, signIn, signOut, validClientId } from './google/auth'
 import { setupSettings } from './ui/settings'
 import { Timers } from './ui/timers'
 import { renderTranscript } from './ui/transcript'
-import { applyUpdate, watchForUpdates } from './update'
+import { applyUpdate, current, watchForUpdates } from './update'
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T
 
@@ -384,6 +385,7 @@ modeSwitch.addEventListener('click', event => {
 
 function refreshPcPairing(): void {
   modeSwitch.hidden = !pc.paired
+  $('pc-unpair').hidden = !pc.paired
   $('pc-status').textContent = pc.settingsStatus()
   if (!pc.paired && target === 'pc') setTarget('phone')
 }
@@ -398,6 +400,15 @@ $('pc-pair').addEventListener('click', () => {
   input.value = ''
   refreshPcPairing()
   setTarget('pc')
+})
+$('pc-paste').addEventListener('click', async () => {
+  const input = $<HTMLInputElement>('pc-link')
+  try {
+    input.value = (await navigator.clipboard.readText()).trim()
+    $('pc-status').textContent = parsePcLink(input.value) ? 'Link erkannt – jetzt „Koppeln“ tippen.' : 'In der Zwischenablage steht kein Kopplungslink.'
+  } catch {
+    input.focus()
+  }
 })
 $('pc-unpair').addEventListener('click', () => {
   if (!pc.paired || !confirm('Kopplung mit dem PC lösen?')) return
@@ -431,10 +442,24 @@ const { open: openSettings } = setupSettings({
     saveHistory(history)
     ui.you.textContent = ''
     ui.answer.textContent = ''
-  }
+  },
+  summaries: {
+    google: () => {
+      if (accessToken()) return { text: 'Verbunden' }
+      if (signedInOnce()) return { text: 'Neu anmelden', bad: true }
+      return { text: validClientId(clientId()) ? 'Bereit zum Anmelden' : 'Aus' }
+    },
+    pc: () => (pc.paired ? { text: pc.paired.host } : { text: 'Nicht gekoppelt' }),
+    store: () => {
+      const count = loadInstalled().length
+      return { text: count ? `${count} aktiv` : 'Entdecken' }
+    },
+    version: current.version
+  },
+  onOpenStore: () => market.open()
 })
-$('welcome-setup').addEventListener('click', openSettings)
-$('open-settings').addEventListener('click', openSettings)
+$('welcome-setup').addEventListener('click', () => openSettings('ki'))
+$('open-settings').addEventListener('click', () => openSettings())
 
 // Der Systemprompt wird vor jeder Frage neu gebaut; Änderungen wirken also sofort.
 const market = setupMarket({ onChanged: () => renderChips() })
@@ -468,6 +493,7 @@ function refreshGoogle(message?: string): void {
     googleStatus.textContent = 'Verbunden. Sag zum Beispiel: „Hab ich neue Mails?“'
   } else if (signedInOnce()) googleStatus.textContent = 'Anmeldung abgelaufen – einmal „Mit Google anmelden“ tippen.'
   else googleStatus.textContent = validClientId(clientId()) ? 'Bereit zum Anmelden.' : 'Noch nicht eingerichtet.'
+  $('google-signout').hidden = !accessToken() && !signedInOnce()
 }
 $('google-client').addEventListener('change', () => {
   const value = $<HTMLInputElement>('google-client').value.trim()
@@ -489,6 +515,7 @@ $('google-signout').addEventListener('click', () => {
   refreshGoogle('Abgemeldet.')
 })
 $('open-settings').addEventListener('click', () => refreshGoogle())
+refreshGoogle()
 const returned = completeSignIn()
 if (returned) {
   refreshGoogle(returned.ok ? undefined : returned.error)
@@ -496,7 +523,7 @@ if (returned) {
     ui.answer.classList.remove('error')
     ui.answer.textContent = 'Google ist verbunden. Frag mich nach deinen Mails oder Terminen.'
   } else {
-    openSettings()
+    openSettings('google')
   }
 }
 

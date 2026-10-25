@@ -100,102 +100,147 @@
     <dialog class="sheet" id="settings" aria-labelledby="settings-title">
       <form method="dialog" class="sheet-body" id="settings-form">
         <header class="sheet-head">
+          <button class="text-button back" id="settings-back" type="button" hidden>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>Zurück
+          </button>
           <h2 id="settings-title">Einstellungen</h2>
           <button class="text-button" value="close">Fertig</button>
         </header>
 
-        <fieldset>
-          <legend>KI</legend>
-          <div class="segmented" role="radiogroup" aria-label="Anbieter">
-            <label><input type="radio" name="provider" value="gemini" /><span>Gemini</span></label>
-            <label><input type="radio" name="provider" value="openai" /><span>OpenAI</span></label>
+        <!-- Übersicht: was läuft, was fehlt. Jede Zeile öffnet ihre Seite. -->
+        <section class="set-page" data-page="home">
+          <div class="set-status" id="set-status" role="status"></div>
+
+          <h3 class="set-group">Auf dem iPhone</h3>
+          <div class="set-list">
+            <button class="set-row" type="button" data-page="ki"><span class="set-icon" style="--c:#4aa8ff"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 4.7L18.5 9l-4.7 1.8L12 15.5l-1.8-4.7L5.5 9l4.7-1.3z" /><path d="M18 15l.8 2.2L21 18l-2.2.8L18 21l-.8-2.2L15 18l2.2-.8z" /></svg></span><span class="set-label">KI &amp; Schlüssel</span><span class="set-value" id="sum-ki"></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg></button>
+            <button class="set-row" type="button" data-page="stimme"><span class="set-icon" style="--c:#ff9f43"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M5.5 11a6.5 6.5 0 0013 0M12 17.5V21" /></svg></span><span class="set-label">Stimme &amp; Diktat</span><span class="set-value" id="sum-stimme"></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg></button>
+            <button class="set-row" type="button" data-page="google"><span class="set-icon" style="--c:#3ddc97"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" /><path d="M3.5 6.5L12 13l8.5-6.5" /></svg></span><span class="set-label">Gmail &amp; Kalender</span><span class="set-value" id="sum-google"></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg></button>
+            <button class="set-row" type="button" data-page="du"><span class="set-icon" style="--c:#b28dff"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5" /><path d="M5 20c.8-3.6 3.6-5.5 7-5.5s6.2 1.9 7 5.5" /></svg></span><span class="set-label">Du &amp; Gedächtnis</span><span class="set-value" id="sum-du"></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg></button>
           </div>
-          <label class="field">
-            <span>API-Schlüssel</span>
-            <input id="key" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Einfügen" />
-          </label>
-          <p class="note" id="key-help"></p>
-          <label class="field">
-            <span>Modell</span>
-            <div class="row">
-              <select id="model"></select>
-              <button class="text-button" id="load-models" type="button">Prüfen</button>
+
+          <h3 class="set-group">Mit dem PC</h3>
+          <div class="set-list">
+            <button class="set-row" type="button" data-page="pc"><span class="set-icon" style="--c:#0fb5a8"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2" /><path d="M8 20h8M12 16v4" /></svg></span><span class="set-label">PC koppeln</span><span class="set-value" id="sum-pc"></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg></button>
+            <a class="set-row" href="installieren/" target="_blank" rel="noopener"><span class="set-icon" style="--c:#5b6b82"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19h14" /></svg></span><span class="set-label">James für Windows laden</span><span class="set-value"></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg></a>
+          </div>
+          <p class="note set-foot">Am PC kann James Programme, Browser, Dateien und Mails steuern. Gekoppelt schaltest du oben zwischen „iPhone“ und „PC“ um.</p>
+
+          <h3 class="set-group">Mehr</h3>
+          <div class="set-list">
+            <button class="set-row" type="button" id="settings-store"><span class="set-icon" style="--c:#ff6b9a"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l-1 12H6zM9 8V6a3 3 0 016 0v2" /></svg></span><span class="set-label">Store: Fähigkeiten</span><span class="set-value" id="sum-store"></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg></button>
+            <a class="set-row" href="datenschutz/" target="_blank" rel="noopener"><span class="set-icon" style="--c:#5b6b82"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.5-7-10V6z" /></svg></span><span class="set-label">Datenschutz</span><span class="set-value"></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg></a>
+            <div class="set-row static"><span class="set-icon" style="--c:#5b6b82"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" /><path d="M12 11v5M12 8v.01" /></svg></span><span class="set-label">Version</span><span class="set-value" id="sum-version"></span></div>
+          </div>
+
+          <p class="note small">James läuft komplett auf diesem iPhone. Schlüssel, Verlauf und Gedächtnis liegen nur hier; Anfragen gehen direkt an den gewählten KI-Anbieter. Wetter: Open-Meteo. Wissen: Wikipedia.</p>
+        </section>
+
+        <section class="set-page" data-page="ki" data-title="KI &amp; Schlüssel" hidden>
+          <fieldset>
+            <div class="segmented" role="radiogroup" aria-label="Anbieter">
+              <label><input type="radio" name="provider" value="gemini" /><span>Gemini</span></label>
+              <label><input type="radio" name="provider" value="openai" /><span>OpenAI</span></label>
             </div>
-          </label>
-          <p class="note" id="model-status"></p>
-        </fieldset>
+            <label class="field">
+              <span>API-Schlüssel</span>
+              <input id="key" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Einfügen" />
+            </label>
+            <div class="row">
+              <button class="text-button" id="key-paste" type="button">Aus Zwischenablage einfügen</button>
+              <button class="text-button" id="key-show" type="button">Anzeigen</button>
+            </div>
+            <p class="note" id="key-help"></p>
+            <label class="field">
+              <span>Modell</span>
+              <div class="row">
+                <select id="model"></select>
+                <button class="text-button" id="load-models" type="button">Prüfen</button>
+              </div>
+            </label>
+            <p class="note" id="model-status"></p>
+          </fieldset>
+        </section>
 
-        <fieldset>
-          <legend>Google: Gmail und Kalender</legend>
-          <p class="note">James liest und schreibt Mails und Termine direkt vom iPhone – über dein eigenes Google-Projekt, ohne fremden Server.</p>
-          <label class="field">
-            <span>Client-ID</span>
-            <input id="google-client" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="….apps.googleusercontent.com" />
-          </label>
-          <div class="row">
-            <button class="text-button" id="google-signin" type="button">Mit Google anmelden</button>
-            <button class="text-button danger" id="google-signout" type="button">Abmelden</button>
-          </div>
-          <p class="note" id="google-status"></p>
-          <details class="note">
-            <summary>Einmal einrichten (5 Minuten, am PC am einfachsten)</summary>
-            <ol>
-              <li><a href="https://console.cloud.google.com/projectcreate" target="_blank" rel="noopener">Google Cloud Console</a>: neues Projekt „James“.</li>
-              <li>APIs aktivieren: <a href="https://console.cloud.google.com/apis/library/gmail.googleapis.com" target="_blank" rel="noopener">Gmail API</a> und <a href="https://console.cloud.google.com/apis/library/calendar-json.googleapis.com" target="_blank" rel="noopener">Google Calendar API</a>.</li>
-              <li>OAuth-Zustimmungsbildschirm: Extern, Status „Test“, deine Gmail-Adresse als Testnutzer.</li>
-              <li>Anmeldedaten → OAuth-Client-ID → Webanwendung. Autorisierter JavaScript-Ursprung und Weiterleitungs-URI genau so eintragen:<br /><code id="google-origin"></code><br /><code id="google-redirect"></code></li>
-              <li>Client-ID hier einfügen, „Mit Google anmelden“.</li>
+        <section class="set-page" data-page="stimme" data-title="Stimme &amp; Diktat" hidden>
+          <fieldset>
+            <label class="field"><span>Stimme</span><select id="voice"></select></label>
+            <label class="field"><span>Tempo <output id="rate-out"></output></span><input id="rate" type="range" min="0.7" max="1.5" step="0.05" /></label>
+            <label class="toggle"><input id="speak" type="checkbox" /><span>Antworten vorlesen</span></label>
+            <label class="field"><span>Diktat</span>
+              <select id="dictation">
+                <option value="ki">KI-Diktat – am genauesten, iPhone und PC</option>
+                <option value="ios">Browser-Diktat – Text erscheint live</option>
+              </select>
+            </label>
+            <label class="toggle"><input id="conversation" type="checkbox" /><span>Gesprächsmodus: nach der Antwort weiter zuhören</span></label>
+            <button class="text-button" id="test-voice" type="button">Stimme testen</button>
+            <p class="note">Bessere Stimmen: iOS-Einstellungen → Bedienungshilfen → Gesprochene Inhalte → Stimmen → Deutsch, dort eine „Erweitert“-Stimme laden.</p>
+          </fieldset>
+        </section>
+
+        <section class="set-page" data-page="google" data-title="Gmail &amp; Kalender" hidden>
+          <fieldset>
+            <p class="note">James liest und schreibt Mails und Termine direkt vom iPhone – über dein eigenes Google-Projekt, ohne fremden Server.</p>
+            <label class="field">
+              <span>Client-ID</span>
+              <input id="google-client" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="….apps.googleusercontent.com" />
+            </label>
+            <div class="row">
+              <button class="text-button" id="google-signin" type="button">Mit Google anmelden</button>
+              <button class="text-button danger" id="google-signout" type="button">Abmelden</button>
+            </div>
+            <p class="note" id="google-status"></p>
+            <details class="note">
+              <summary>Einmal einrichten (5 Minuten, am PC am einfachsten)</summary>
+              <ol>
+                <li><a href="https://console.cloud.google.com/projectcreate" target="_blank" rel="noopener">Google Cloud Console</a>: neues Projekt „James“.</li>
+                <li>APIs aktivieren: <a href="https://console.cloud.google.com/apis/library/gmail.googleapis.com" target="_blank" rel="noopener">Gmail API</a> und <a href="https://console.cloud.google.com/apis/library/calendar-json.googleapis.com" target="_blank" rel="noopener">Google Calendar API</a>.</li>
+                <li>OAuth-Zustimmungsbildschirm: Extern, Status „Test“, deine Gmail-Adresse als Testnutzer.</li>
+                <li>Anmeldedaten → OAuth-Client-ID → Webanwendung. Autorisierter JavaScript-Ursprung und Weiterleitungs-URI genau so eintragen:<br /><code id="google-origin"></code><br /><code id="google-redirect"></code></li>
+                <li>Client-ID hier einfügen, „Mit Google anmelden“.</li>
+              </ol>
+              <p>Eine Anmeldung gilt eine Stunde; danach reicht ein Tipp auf „Mit Google anmelden“.</p>
+            </details>
+          </fieldset>
+        </section>
+
+        <section class="set-page" data-page="du" data-title="Du &amp; Gedächtnis" hidden>
+          <fieldset>
+            <label class="field"><span>Name</span><input id="user-name" type="text" autocomplete="given-name" /></label>
+          </fieldset>
+          <fieldset>
+            <legend>Gedächtnis</legend>
+            <p class="note" id="memory-empty">Noch nichts gemerkt. Sag zum Beispiel: „Merk dir, dass ich Kaffee ohne Zucker trinke.“</p>
+            <ul class="memory" id="memory"></ul>
+            <div class="row">
+              <button class="text-button danger" id="clear-history" type="button">Verlauf löschen</button>
+              <button class="text-button danger" id="clear-memory" type="button">Gedächtnis löschen</button>
+            </div>
+          </fieldset>
+        </section>
+
+        <section class="set-page" data-page="pc" data-title="PC koppeln" hidden>
+          <fieldset>
+            <p class="note">James am PC vom iPhone aus steuern: sprechen, tippen, Antworten hören. Dort hat er Gmail, Kalender, Browser und Programme.</p>
+            <ol class="note steps-mini">
+              <li>Am PC: Menü → <strong>iPhone &amp; Apple Watch</strong> → „QR-Code für iPhone &amp; Watch erstellen“.</li>
+              <li>Mit der iPhone-Kamera scannen. Es öffnet sich die Fernbedienung des PCs; dabei richtet iOS das Zertifikat ein.</li>
+              <li>Dort die Adresse kopieren (Teilen → Kopieren), hier auf <strong>Einfügen</strong> und <strong>Koppeln</strong> tippen.</li>
             </ol>
-            <p>Eine Anmeldung gilt eine Stunde; danach reicht ein Tipp auf „Mit Google anmelden“.</p>
-          </details>
-        </fieldset>
-
-        <fieldset>
-          <legend>PC</legend>
-          <p class="note">James am PC vom iPhone aus steuern: sprechen, tippen, Antworten hören. Dort hat er Gmail, Kalender, Browser und Programme.</p>
-          <label class="field">
-            <span>Kopplungslink vom PC</span>
-            <input id="pc-link" type="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="https://…#host=…&amp;token=…" />
-          </label>
-          <div class="row">
-            <button class="text-button" id="pc-pair" type="button">Koppeln</button>
-            <button class="text-button danger" id="pc-unpair" type="button">Trennen</button>
-          </div>
-          <p class="note" id="pc-status"></p>
-          <p class="note">Den Link gibt es am PC unter Einstellungen → Telefon. Das iPhone muss im selben WLAN sein (oder über Tailscale verbunden) und dem Zertifikat des PCs vertrauen; der erste QR-Code dort richtet das ein.</p>
-        </fieldset>
-
-        <fieldset>
-          <legend>Du</legend>
-          <label class="field"><span>Name</span><input id="user-name" type="text" autocomplete="given-name" /></label>
-        </fieldset>
-
-        <fieldset>
-          <legend>Stimme</legend>
-          <label class="field"><span>Stimme</span><select id="voice"></select></label>
-          <label class="field"><span>Tempo <output id="rate-out"></output></span><input id="rate" type="range" min="0.7" max="1.5" step="0.05" /></label>
-          <label class="toggle"><input id="speak" type="checkbox" /><span>Antworten vorlesen</span></label>
-          <label class="field"><span>Diktat</span>
-            <select id="dictation">
-              <option value="ki">KI-Diktat – am genauesten, iPhone und PC</option>
-              <option value="ios">Browser-Diktat – Text erscheint live</option>
-            </select>
-          </label>
-          <label class="toggle"><input id="conversation" type="checkbox" /><span>Gesprächsmodus: nach der Antwort weiter zuhören</span></label>
-          <button class="text-button" id="test-voice" type="button">Stimme testen</button>
-          <p class="note">Bessere Stimmen: iOS-Einstellungen → Bedienungshilfen → Gesprochene Inhalte → Stimmen → Deutsch, dort eine „Erweitert“-Stimme laden.</p>
-        </fieldset>
-
-        <fieldset>
-          <legend>Gedächtnis</legend>
-          <ul class="memory" id="memory"></ul>
-          <div class="row">
-            <button class="text-button danger" id="clear-history" type="button">Verlauf löschen</button>
-            <button class="text-button danger" id="clear-memory" type="button">Gedächtnis löschen</button>
-          </div>
-        </fieldset>
-
-        <p class="note small">James läuft komplett auf diesem iPhone. Schlüssel, Verlauf und Gedächtnis liegen nur hier; Anfragen gehen direkt an den gewählten KI-Anbieter. Wetter: Open-Meteo. Wissen: Wikipedia.</p>
+            <p class="note">Das iPhone muss im selben WLAN sein oder über Tailscale verbunden.</p>
+            <label class="field">
+              <span>Kopplungslink vom PC</span>
+              <input id="pc-link" type="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="https://…#host=…&amp;token=…" />
+            </label>
+            <div class="row">
+              <button class="text-button" id="pc-paste" type="button">Einfügen</button>
+              <button class="text-button" id="pc-pair" type="button">Koppeln</button>
+              <button class="text-button danger" id="pc-unpair" type="button">Trennen</button>
+            </div>
+            <p class="note" id="pc-status"></p>
+</fieldset>
+        </section>
       </form>
     </dialog>
 
