@@ -82,6 +82,11 @@ export class PcMode {
     return this.enabled
   }
 
+  /** Läuft gerade ein Gespräch mit dem PC? Dann kein stilles Neuladen. */
+  get busy(): boolean {
+    return this.talking || ['listening', 'thinking', 'speaking', 'tool', 'research', 'confirm'].includes(this.pcState)
+  }
+
   pair(input: string): { ok: boolean; error?: string } {
     const pairing = parsePcLink(input)
     if (!pairing) return { ok: false, error: 'Das ist kein Kopplungslink vom PC. Er steht am PC unter Menü → iPhone & Apple Watch.' }

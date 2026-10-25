@@ -3,9 +3,10 @@
  *
  * Jeder Push auf `main` baut die App neu, legt eine `version.json` daneben und
  * ein GitHub-Release `v0.2.<Lauf>` an.
- * Die App fragt die beim Start, beim Zurückkehren und alle 30 Minuten ab.
+ * Die App fragt die beim Start, beim Zurückkehren, wieder im Netz und alle
+ * 30 Minuten ab.
  * Gibt es etwas Neueres:
- * - direkt nach dem Start, bevor jemand etwas getan hat: still neu laden;
+ * - nach dem Start oder der Rückkehr, bevor jemand etwas getan hat: still neu laden;
  * - mitten im Gebrauch: Hinweis mit „Aktualisieren“, damit kein Gespräch abreißt.
  */
 
@@ -36,15 +37,54 @@ export async function fetchRemote(base = import.meta.env.BASE_URL): Promise<Buil
   }
 }
 
+/** Wartet, bis ein neuer Service Worker übernommen hat – höchstens `ms`. */
+async function activated(registration: ServiceWorkerRegistration | undefined, ms: number): Promise<void> {
+  const worker = registration?.installing ?? registration?.waiting
+  if (!worker) return
+  await new Promise<void>(resolve => {
+    const timer = setTimeout(resolve, ms)
+    const done = () => {
+      if (worker.state === 'activated' || worker.state === 'redundant') {
+        clearTimeout(timer)
+        resolve()
+      }
+    }
+    worker.addEventListener('statechange', done)
+    done()
+  })
+}
+
+/**
+ * Adresse zum Neuladen. Der Parameter `v` macht sie neu, sodass weder der
+ * Browser-Zwischenspeicher noch ein alter Service Worker die vorige Seite
+ * liefert (GitHub Pages erlaubt 10 Minuten Zwischenspeichern).
+ */
+export function reloadUrl(href: string, sha: string): string {
+  const url = new URL(href)
+  url.searchParams.set('v', sha)
+  return url.toString()
+}
+
+/** Entfernt `v` wieder aus der Adresszeile, ohne neu zu laden. */
+export function cleanUrl(href: string): string | null {
+  const url = new URL(href)
+  if (!url.searchParams.has('v')) return null
+  url.searchParams.delete('v')
+  return url.toString()
+}
+
 /** Neue Dateien holen und neu laden. Der Service Worker liefert danach die neue Fassung. */
-export async function applyUpdate(): Promise<void> {
+export async function applyUpdate(remote?: BuildInfo | null): Promise<void> {
   try {
     const registration = await navigator.serviceWorker?.getRegistration()
     await registration?.update()
+    await activated(registration, 3000)
   } catch {
     // ohne Service Worker reicht das Neuladen
   }
-  location.reload()
+  const target = remote ?? (await fetchRemote())
+  if (target) location.replace(reloadUrl(location.href, target.sha))
+  else location.reload()
 }
 
 export function watchForUpdates(options: {
@@ -74,7 +114,7 @@ export function watchForUpdates(options: {
       } catch {
         // egal
       }
-      await applyUpdate()
+      await applyUpdate(remote)
       return
     }
     if (announced !== remote.sha) {
@@ -83,9 +123,17 @@ export function watchForUpdates(options: {
     }
   }
 
+  const clean = cleanUrl(location.href)
+  if (clean) history.replaceState(history.state, '', clean)
+
   void check()
   setInterval(() => void check(), CHECK_EVERY)
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') void check()
   })
+  // iOS holt Home-Bildschirm-Apps oft aus dem Speicher zurück, ohne neu zu starten.
+  window.addEventListener('pageshow', event => {
+    if (event.persisted) void check()
+  })
+  window.addEventListener('online', () => void check())
 }

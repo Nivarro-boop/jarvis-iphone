@@ -42,10 +42,16 @@ let history: Message[] = loadHistory()
 let turn: AbortController | null = null
 let lastQuestion = ''
 let state: OrbState = 'idle'
-/** Hat der Nutzer seit dem Start schon etwas getan? Dann kein stilles Neuladen mehr. */
+/**
+ * Hat der Nutzer seit dem Start – oder seit er aus dem Hintergrund zurück ist –
+ * schon etwas getan? Dann kein stilles Neuladen, nur ein Hinweis.
+ */
 let touched = false
-document.addEventListener('pointerdown', () => (touched = true), { capture: true, once: true })
-document.addEventListener('keydown', () => (touched = true), { capture: true, once: true })
+document.addEventListener('pointerdown', () => (touched = true), { capture: true })
+document.addEventListener('keydown', () => (touched = true), { capture: true })
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) touched = false
+})
 
 const orb = new Orb($<HTMLCanvasElement>('orb'))
 const speaker = new Speaker()
@@ -628,7 +634,10 @@ try {
 }
 
 watchForUpdates({
-  busy: () => target === 'pc' || !['idle', 'setup', 'error'].includes(state) || !!document.querySelector('dialog[open]'),
+  busy: () =>
+    (target === 'pc' ? pc.busy : !['idle', 'setup', 'error'].includes(state)) ||
+    !!document.querySelector('dialog[open]') ||
+    !!ui.text.value.trim(),
   touched: () => touched,
   onAvailable: remote => {
     $('update-text').textContent = `Neue Version ${remote.version} ist da`

@@ -5,10 +5,10 @@
  * Strategie: Seiten zuerst aus dem Netz (damit Updates ankommen), sonst aus
  * dem Zwischenspeicher; Dateien mit Hash im Namen aus dem Zwischenspeicher.
  */
-const CACHE = 'james-v3'
+const CACHE = 'james-v4'
 
 self.addEventListener('install', event => {
-  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(['./', 'manifest.webmanifest', 'icons/apple-touch-icon.png'])))
+  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(['./', 'manifest.webmanifest', 'icons/apple-touch-icon.png'].map(path => new Request(path, { cache: 'reload' })))))
   self.skipWaiting()
 })
 
@@ -26,14 +26,25 @@ self.addEventListener('fetch', event => {
   if (/\/(version|marketplace)\.json$/.test(url.pathname)) return
 
   if (request.mode === 'navigate') {
+    // Seiten immer beim Server nachfragen: GitHub Pages erlaubt dem Browser
+    // 10 Minuten Zwischenspeichern, sonst käme ein Update erst danach an.
+    let fresh
+    try {
+      fresh = new Request(request, { cache: 'no-cache' })
+    } catch {
+      fresh = request
+    }
+    // `v` hängt nur das Update an; gespeichert wird unter der sauberen Adresse.
+    const key = new URL(request.url)
+    key.searchParams.delete('v')
     event.respondWith(
-      fetch(request)
+      fetch(fresh)
         .then(response => {
           // Jede Seite unter ihrer eigenen Adresse, sonst landet der
           // Marktplatz offline anstelle der App.
           if (response.ok) {
             const copy = response.clone()
-            caches.open(CACHE).then(cache => cache.put(request, copy))
+            caches.open(CACHE).then(cache => cache.put(key.toString(), copy))
           }
           return response
         })
