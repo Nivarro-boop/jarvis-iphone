@@ -1,7 +1,8 @@
 /**
  * Hält James auf dem neuesten Stand von GitHub.
  *
- * Jeder Push auf `main` baut die App neu und legt eine `version.json` daneben.
+ * Jeder Push auf `main` baut die App neu, legt eine `version.json` daneben und
+ * ein GitHub-Release `v0.2.<Lauf>` an.
  * Die App fragt die beim Start, beim Zurückkehren und alle 30 Minuten ab.
  * Gibt es etwas Neueres:
  * - direkt nach dem Start, bevor jemand etwas getan hat: still neu laden;

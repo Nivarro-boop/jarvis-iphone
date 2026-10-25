@@ -42,3 +42,37 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+  # Jede veröffentlichte Fassung steht auch als GitHub-Release da. Die App
+  # aktualisiert sich daraus selbst (version.json), und James am PC baut
+  # seinen Kopplungs-Code aus derselben version.json — Release, App und Code
+  # sind damit immer dieselbe Fassung.
+  release:
+    if: github.event_name == 'push'
+    needs: deploy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 10
+      - name: Release anlegen
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION="$(node -p "require('./package.json').version.split('.').slice(0, 2).join('.')").${GITHUB_RUN_NUMBER}"
+          if gh release view "v${VERSION}" > /dev/null 2>&1; then
+            echo "v${VERSION} gibt es schon."
+            exit 0
+          fi
+          {
+            echo "James fürs iPhone ${VERSION} ist live und aktualisiert sich auf jedem iPhone von selbst."
+            echo
+            echo "- App: https://nivarro-boop.github.io/jarvis-iphone/"
+            echo "- Laden: https://james-marktplatz.netlify.app/laden"
+            echo "- Store: https://james-marktplatz.netlify.app"
+            echo
+            echo "Neu:"
+            git log -n 8 --pretty='- %s'
+          } > notes.md
+          gh release create "v${VERSION}" --target "${GITHUB_SHA}" --title "James fürs iPhone ${VERSION}" --notes-file notes.md

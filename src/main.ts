@@ -535,8 +535,26 @@ if (location.hash.startsWith('#pc=')) {
   if (confirm(`Mit James am PC (${host}) koppeln?`) && pc.pair(link).ok) {
     refreshPcPairing()
     setTarget('pc')
+    // Die Kamera öffnet Safari. James vom Home-Bildschirm hat einen eigenen
+    // Speicher und weiß von dieser Kopplung nichts — also den Link mitgeben.
+    if (!matchMedia('(display-mode: standalone)').matches && !(navigator as { standalone?: boolean }).standalone) {
+      openSettings('pc')
+      $<HTMLInputElement>('pc-link').value = location.origin + location.pathname + link
+      $('pc-copy').hidden = false
+      $('pc-handoff').hidden = false
+      $('pc-handoff').textContent = 'In Safari gekoppelt. Liegt James auf dem Home-Bildschirm: „Link kopieren“, James dort öffnen, Einstellungen → PC koppeln → Einfügen → Koppeln.'
+    }
   }
 }
+$('pc-copy').addEventListener('click', async () => {
+  const value = $<HTMLInputElement>('pc-link').value
+  try {
+    await navigator.clipboard.writeText(value)
+    $('pc-copy').textContent = 'Kopiert'
+  } catch {
+    $<HTMLInputElement>('pc-link').select()
+  }
+})
 
 const historyDialog = $<HTMLDialogElement>('history')
 $('open-history').addEventListener('click', () => {

@@ -73,6 +73,10 @@ Das hier ist bewusst eigenständig und teilt keinen Code.
 Jeder Push auf `main` wird geprüft, gebaut und nach GitHub Pages veröffentlicht.
 Der Build legt eine `version.json` mit Versionsnummer (`0.2.<Lauf>`), Commit
 und den letzten Änderungen daneben.
+Danach legt die Action ein GitHub-Release `v0.2.<Lauf>` mit diesen Änderungen an.
+`version.json` enthält auch die App-Adresse (`app`): James am PC liest sie
+und baut daraus seinen Kopplungs-Code. Release, App und Code sind so immer
+dieselbe Fassung, ohne dass James am PC dafür ein Update braucht.
 
 - Die App fragt beim Start, beim Zurückkehren und alle 30 Minuten nach.
 - Direkt nach dem Start aktualisiert sie sich still; mitten im Gebrauch zeigt

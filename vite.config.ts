@@ -23,6 +23,13 @@ function git(command: string): string {
 const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')) as { version: string }
 const [major, minor] = pkg.version.split('.')
 const run = process.env.GITHUB_RUN_NUMBER
+/**
+ * Die App-Adresse für Installationsprofil und Kopplung — immer die
+ * veröffentlichte. James am PC liest sie aus `version.json` und baut daraus
+ * seinen Kopplungs-Code; so folgt der Code jeder neuen Fassung.
+ */
+const APP_URL = process.env.APP_URL ?? 'https://nivarro-boop.github.io/jarvis-iphone/'
+
 const build = {
   version: run ? `${major}.${minor}.${run}` : `${pkg.version}-dev`,
   sha: (process.env.GITHUB_SHA ?? git('rev-parse HEAD')).slice(0, 7) || 'lokal',
@@ -33,14 +40,12 @@ const build = {
     .filter(Boolean)
 }
 
-/** Die App-Adresse für das Installationsprofil — immer die veröffentlichte. */
-const APP_URL = process.env.APP_URL ?? 'https://nivarro-boop.github.io/jarvis-iphone/'
 
 function versionFile(): Plugin {
   return {
     name: 'james-version',
     generateBundle() {
-      this.emitFile({ type: 'asset', fileName: 'version.json', source: JSON.stringify(build, null, 2) })
+      this.emitFile({ type: 'asset', fileName: 'version.json', source: JSON.stringify({ ...build, app: APP_URL }, null, 2) })
       this.emitFile({
         type: 'asset',
         fileName: 'james.mobileconfig',
