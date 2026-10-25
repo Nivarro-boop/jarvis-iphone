@@ -58,6 +58,31 @@ export function syncWithCatalog(catalog: Catalog): { updated: Skill[] } {
   return { updated }
 }
 
+const plain = (text: string) =>
+  text
+    .toLowerCase()
+    .normalize('NFKD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim()
+
+/** „Kochassistenten“ und „Kochassistent“ sind dieselbe Fähigkeit. */
+const stem = (text: string) => text.replace(/(en|n)$/, '')
+
+/**
+ * Findet eine Fähigkeit nach dem, was jemand sagt: „den Kochassistenten“,
+ * „Englisch“, „quiz“. Genauer Treffer vor Teiltreffer.
+ */
+export function findSkill(skills: Skill[], spoken: string): Skill | undefined {
+  const wanted = stem(plain(spoken).replace(/^(den|die|das|der|dem|ein|eine|einen)\s+/, ''))
+  if (!wanted) return undefined
+  const keys = (s: Skill) => [plain(s.name), plain(s.id), plain(s.name.split(/[-\s]/)[0] ?? '')].map(stem)
+  return (
+    skills.find(s => keys(s).includes(wanted)) ??
+    skills.find(s => keys(s).some(k => k.length > 2 && (k.includes(wanted) || wanted.includes(k))))
+  )
+}
+
 /** Teil des Systemprompts für die aktiven Fähigkeiten. */
 export function skillsPrompt(skills: Skill[] = loadInstalled()): string {
   if (!skills.length) return ''

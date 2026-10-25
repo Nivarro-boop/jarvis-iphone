@@ -10,14 +10,23 @@ Ein eigenständiger Sprachassistent fürs iPhone. Kugel antippen, sprechen,
 James antwortet laut. Kein Rechner nötig, kein eigener Server, kein Konto bei
 uns: Die App läuft komplett im iPhone und spricht direkt mit der gewählten KI.
 
-**Laden:** https://nivarro-boop.github.io/jarvis-iphone/installieren/ – zeigt am
-iPhone die drei Tipps (James öffnen → Teilen → **Zum Home-Bildschirm**), am PC
-einen QR-Code und den Windows-Installer. Danach startet James wie eine App,
-im Vollbild und mit eigenem Symbol.
+**Laden (alle Geräte):** https://james-marktplatz.netlify.app/laden – eine Seite
+für iPhone, Windows und Apple Watch. Das eigene Gerät steht oben und ist
+markiert; am iPhone folgen die drei Tipps (Teilen → Zum Home-Bildschirm,
+Profil nur als Alternative), am PC ein QR-Code und
+der Windows-Installer mit Version und Größe live aus den GitHub-Releases.
+Dazu kurze Antworten auf die häufigsten Fragen (Kosten, Windows-Warnung,
+Datenschutz, Koppeln). Gleiche Seite auf GitHub Pages:
+https://nivarro-boop.github.io/jarvis-iphone/installieren/.
 
 **James Store:** https://james-marktplatz.netlify.app – Store wie Epic/App Store
-(Entdecken, Suche, Bibliothek), selbst als App installierbar. „Holen“ installiert
-James am iPhone mit einem Profil (Erlauben → Einstellungen → Installieren).
+(Entdecken, Suche, Bibliothek), selbst als App installierbar. Am iPhone führt der Store zur Anleitung
+für den Home-Bildschirm, am Rechner zeigt er QR-Codes.
+Jede App und jede Fähigkeit hat eine Detailseite mit eigenem Link zum Teilen
+(`/store/?app=james-windows`, `/store/?skill=koch`); Fähigkeiten lassen sich
+nach Kategorie filtern. Installiert und verlinkt wird immer die
+GitHub-Pages-Adresse, damit Fähigkeiten im Speicher der installierten App
+landen. In James selbst reicht „Installiere den Kochassistenten“.
 Die Netlify-Site spiegelt GitHub Pages live; nur das Profil liegt dort selbst
 (`npm run netlify`, Erklärung in `scripts/netlify-site.mjs`). Apple Watch:
 https://james-marktplatz.netlify.app/uhr.

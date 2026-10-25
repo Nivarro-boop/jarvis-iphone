@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { installationTarget } from '../src/market/installation'
+import { APP_HOME, appRootFor, installationTarget } from '../src/market/installation'
 
 describe('Installationsziele', () => {
   it('richtet App und Store getrennt auf die passende Startseite', () => {
@@ -17,5 +17,12 @@ describe('Installationsziele', () => {
     expect(target.url).toBe('https://example.invalid/')
     expect(target.guide).not.toContain('secret')
     expect(target.guide).not.toContain('evil')
+  })
+})
+
+describe('Adresse der App', () => {
+  it('nimmt auf Netlify die GitHub-Pages-Adresse, sonst die eigene', () => {
+    expect(appRootFor({ origin: 'https://james-marktplatz.netlify.app', hostname: 'james-marktplatz.netlify.app' }, '/jarvis-iphone/')).toBe(APP_HOME)
+    expect(appRootFor({ origin: 'http://localhost:5173', hostname: 'localhost' }, '/')).toBe('http://localhost:5173/')
   })
 })

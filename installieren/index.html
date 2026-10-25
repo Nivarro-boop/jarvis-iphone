@@ -4,90 +4,147 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>James laden</title>
-    <meta name="description" content="James aufs iPhone holen – in drei Schritten, ohne App Store." />
+    <meta name="description" content="James laden – für iPhone, Apple Watch und Windows. Kostenlos, ohne App Store, immer die neueste Fassung." />
     <meta name="theme-color" content="#05070b" />
+    <meta name="color-scheme" content="dark" />
     <meta property="og:title" content="James laden" />
-    <meta property="og:description" content="James aufs iPhone holen – in drei Schritten, ohne App Store." />
+    <meta property="og:description" content="James für iPhone, Apple Watch und Windows – kostenlos, immer die neueste Fassung." />
     <meta property="og:image" content="https://nivarro-boop.github.io/jarvis-iphone/icons/icon-512-opaque.png" />
     <link rel="icon" type="image/png" href="../icons/icon-192.png" />
     <link rel="apple-touch-icon" href="../icons/apple-touch-icon.png" />
     <link rel="manifest" href="../manifest.webmanifest" />
   </head>
   <body class="site">
+    <a class="skip" href="#inhalt">Zum Inhalt</a>
     <header class="nav">
-      <a class="brand" href="../marktplatz/">
+      <a class="brand" href="./" aria-label="James laden, Startseite">
         <img src="../icons/icon-192.png" alt="" width="32" height="32" />
         <span>James <em>laden</em></span>
       </a>
       <nav aria-label="Bereiche">
+        <a href="../store/">Store</a>
         <a href="../marktplatz/">Marktplatz</a>
       </nav>
     </header>
 
-    <main class="install-page">
+    <main class="install-page" id="inhalt">
       <section class="install-hero">
         <img id="install-icon" class="app-icon" src="../icons/apple-touch-icon.png" alt="" width="96" height="96" />
-        <h1 id="install-title">James aufs iPhone</h1>
-        <p class="lead" id="install-lead">Eine Web-App: kein App Store, keine Apple-Developer-Mitgliedschaft nötig. KI-Anbieter können einen eigenen Zugang benötigen.</p>
+        <h1 id="install-title">James laden</h1>
+        <p class="lead" id="install-lead">Dein Assistent für iPhone, Apple Watch und PC. Kostenlos, ohne Konto bei uns, immer die neueste Fassung.</p>
       </section>
 
-      <!-- iPhone in Safari: ein Tipp über das Installationsprofil -->
-      <section class="steps oneTap" id="ios-profile" hidden>
-        <h2>Optional: Symbol über ein Profil hinzufügen</h2>
-        <p>Dieses Profil fügt eine Website-Verknüpfung hinzu. Es installiert keine native App und schaltet keine Watch-App frei.</p>
-        <!-- Von Netlify: Nur dort kommt das Profil mit dem Dateityp, den iOS zum Installieren braucht. -->
-        <a id="profile-download" class="button primary wide big" href="https://james-marktplatz.netlify.app/jarvis-iphone/james.mobileconfig">Web-Clip-Profil laden</a>
-        <ol>
-          <li><span class="num">1</span><div><strong>Erlauben</strong><br /><small>Safari fragt, ob das Profil geladen werden darf</small></div><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg></li>
-          <li><span class="num">2</span><div><strong>Einstellungen</strong> öffnen → oben <strong>Profil geladen</strong><br /><small>„Nicht signiert“ ist bei eigenen Profilen normal</small></div><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2" /><path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7" /></svg></li>
-          <li><span class="num">3</span><div><strong>Installieren</strong> – fertig<br /><small>James liegt auf dem Home-Bildschirm und startet wie eine App</small></div><img src="../icons/icon-192.png" alt="" width="28" height="28" /></li>
-        </ol>
-        <p class="fine">Das Profil enthält nur Symbol und Adresse von James, sonst nichts. Entfernen: Einstellungen → Allgemein → VPN und Geräteverwaltung.</p>
+      <!-- Alle Geräte; das passende steht oben und ist markiert. -->
+      <section class="platforms" id="platforms" aria-label="Geräte">
+        <article class="platform" id="p-iphone">
+          <span class="badge">Für dieses Gerät</span>
+          <img src="../icons/apple-touch-icon.png" alt="" width="56" height="56" />
+          <div class="platform-text">
+            <h2 id="iphone-name">iPhone</h2>
+            <p id="iphone-text">Spricht, hört zu, merkt sich Dinge, Gmail und Kalender, Fernbedienung für den PC.</p>
+            <p class="meta" id="iphone-meta">iOS 16 oder neuer · Safari · Web-App, keine App-Store-App</p>
+          </div>
+          <div class="platform-actions">
+            <a class="button primary" id="iphone-get" href="#iphone">Aufs iPhone holen</a>
+            <a class="button" data-app-link href="../">Im Browser testen</a>
+          </div>
+          <figure class="qr small" id="iphone-qr" hidden>
+            <div id="qr" role="img" aria-label="QR-Code zu dieser Seite"></div>
+            <figcaption>Mit der iPhone-Kamera scannen</figcaption>
+          </figure>
+        </article>
 
+        <article class="platform" id="p-windows">
+          <span class="badge">Für dieses Gerät</span>
+          <img src="../icons/icon-192.png" alt="" width="56" height="56" />
+          <div class="platform-text">
+            <h2>Windows</h2>
+            <p>Der große Bruder: steuert Programme, Browser, Dateien, Mails und Kalender. Vom iPhone aus fernbedienbar.</p>
+            <p class="meta" id="windows-meta">Windows 10 oder 11 · 64 Bit · aktualisiert sich selbst</p>
+          </div>
+          <div class="platform-actions">
+            <a class="button primary" id="windows-download" href="https://github.com/Nivarro-boop/James-Jarvis/releases/latest">Für Windows laden</a>
+            <a class="button" href="https://github.com/Nivarro-boop/James-Jarvis/releases" target="_blank" rel="noopener">Alle Versionen</a>
+          </div>
+          <p class="fine" id="windows-elsewhere" hidden>Am PC diese Seite öffnen: <strong>james-marktplatz.netlify.app/laden</strong></p>
+        </article>
+
+        <article class="platform" id="p-watch">
+          <img src="../icons/store-192.png" alt="" width="56" height="56" />
+          <div class="platform-text">
+            <h2>Apple Watch</h2>
+            <p>„Hey Siri, frag James“ – Antwort direkt am Handgelenk. Ein selbst eingerichteter Siri-Kurzbefehl, keine eigene Watch-App.</p>
+            <p class="meta">Kurzbefehle-App · eigener Gemini-Schlüssel · braucht Netz</p>
+          </div>
+          <div class="platform-actions">
+            <a class="button primary" href="../uhr/">Anleitung öffnen</a>
+          </div>
+        </article>
       </section>
 
-      <!-- iPhone in Safari: ohne Profil -->
-      <section class="steps" id="ios-safari" hidden>
-        <ol>
-          <li><span class="num">1</span><div><strong>James öffnen</strong><br /><small>mit dem Knopf unten – dort weitermachen</small></div><img src="../icons/icon-192.png" alt="" width="28" height="28" /></li>
-          <li><span class="num">2</span><div><strong>Teilen</strong> antippen<br /><small>das Quadrat mit dem Pfeil, unten in der Leiste</small></div><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3M7.5 7.5L12 3l4.5 4.5M6 11H5v10h14V11h-1" /></svg></li>
-          <li><span class="num">3</span><div><strong>Zum Home-Bildschirm</strong> → Hinzufügen<br /><small>eventuell etwas nach unten wischen</small></div><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4" /><path d="M12 8.5v7M8.5 12h7" /></svg></li>
-        </ol>
-        <a class="button primary wide" data-app-link href="../">Web-App öffnen</a>
-        <button class="linkish" id="show-profile" type="button">Alternativ: Web-Clip-Profil verwenden</button>
-        <p class="fine">Wichtig: erst in James die Schritte 2 und 3 machen, nicht auf dieser Seite – sonst landet nur diese Anleitung auf dem Home-Bildschirm.</p>
-      </section>
+      <div id="iphone">
+        <!-- iPhone in Safari: Teilen → Zum Home-Bildschirm. Das ist der Standardweg. -->
+        <section class="steps" id="ios-safari" hidden>
+          <h2 class="steps-title" id="ios-steps-title">Aufs iPhone in drei Tipps</h2>
+          <ol>
+            <li><span class="num">1</span><div><strong>Web-App öffnen</strong><br /><small>mit dem Knopf unten – dort weitermachen</small></div><img src="../icons/icon-192.png" alt="" width="28" height="28" /></li>
+            <li><span class="num">2</span><div><strong>Teilen</strong> antippen<br /><small>das Quadrat mit dem Pfeil, unten in der Leiste</small></div><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3M7.5 7.5L12 3l4.5 4.5M6 11H5v10h14V11h-1" /></svg></li>
+            <li><span class="num">3</span><div><strong>Zum Home-Bildschirm</strong> → Hinzufügen<br /><small>eventuell etwas nach unten wischen</small></div><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4" /><path d="M12 8.5v7M8.5 12h7" /></svg></li>
+          </ol>
+          <a class="button primary wide" data-app-link href="../">Web-App öffnen</a>
+          <p class="fine">Wichtig: erst in der Web-App die Schritte 2 und 3 machen, nicht auf dieser Seite – sonst landet nur diese Anleitung auf dem Home-Bildschirm.</p>
+          <p class="fine"><button class="linkish" id="show-profile" type="button">Alternativ: Web-Clip-Profil verwenden</button></p>
+        </section>
 
-      <!-- iPhone, aber nicht in Safari -->
-      <section class="steps" id="ios-other" hidden>
-        <p class="lead">Bitte diese Seite in <strong>Safari</strong> öffnen. Dort findest du den beschriebenen Weg über „Teilen“ und „Zum Home-Bildschirm“.</p>
-        <button class="button primary" id="copy-link" type="button">Link kopieren</button>
-      </section>
+        <!-- Optional: Symbol über ein Profil -->
+        <section class="steps oneTap" id="ios-profile" hidden>
+          <h2 class="steps-title">Optional: Symbol über ein Profil hinzufügen</h2>
+          <p class="fine">Dieses Profil fügt eine Website-Verknüpfung hinzu. Es installiert keine native App und schaltet keine Watch-App frei.</p>
+          <!-- Von Netlify: Nur dort kommt das Profil mit dem Dateityp, den iOS zum Installieren braucht. -->
+          <a id="profile-download" class="button primary wide big" href="https://james-marktplatz.netlify.app/jarvis-iphone/james.mobileconfig">Web-Clip-Profil laden</a>
+          <ol>
+            <li><span class="num">1</span><div><strong>Erlauben</strong><br /><small>Safari fragt, ob das Profil geladen werden darf</small></div><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg></li>
+            <li><span class="num">2</span><div><strong>Einstellungen</strong> öffnen → oben <strong>Profil geladen</strong><br /><small>„Nicht signiert“ ist bei eigenen Profilen normal</small></div><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2" /><path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7" /></svg></li>
+            <li><span class="num">3</span><div><strong>Installieren</strong> – fertig<br /><small>James liegt auf dem Home-Bildschirm und startet wie eine App</small></div><img src="../icons/icon-192.png" alt="" width="28" height="28" /></li>
+          </ol>
+          <p class="fine">Das Profil enthält nur Symbol und Adresse, sonst nichts. Entfernen: Einstellungen → Allgemein → VPN und Geräteverwaltung.</p>
+        </section>
 
-      <!-- Am Computer -->
-      <section class="steps desktop" id="desktop" hidden>
-        <figure class="qr big">
-          <div id="qr" role="img" aria-label="QR-Code zur Installationsseite"></div>
-          <figcaption>Mit der iPhone-Kamera scannen</figcaption>
-        </figure>
-        <div>
-          <h2>Am iPhone weitermachen</h2>
-          <p>QR-Code mit der Kamera scannen. Auf dem iPhone erklärt dann diese Seite die drei Tipps.</p>
-          <h2>Für diesen PC</h2>
-          <p>James für Windows steuert Programme, Browser, Mails und Kalender – und lässt sich vom iPhone aus fernbedienen.</p>
-          <a class="button primary" id="windows-download" href="https://github.com/Nivarro-boop/James-Jarvis/releases/latest">James für Windows laden</a>
-        </div>
-      </section>
+        <!-- iPhone, aber nicht in Safari -->
+        <section class="steps" id="ios-other" hidden>
+          <p class="lead">Bitte diese Seite in <strong>Safari</strong> öffnen. Dort findest du den Weg über „Teilen“ und „Zum Home-Bildschirm“.</p>
+          <button class="button primary" id="copy-link" type="button">Link kopieren</button>
+        </section>
+      </div>
 
-      <section class="block why">
-        <h2>Warum nicht aus dem App Store?</h2>
-        <p>James ist hier eine Web-App: Sie startet wie eine App, im Vollbild, mit eigenem Symbol, und aktualisiert sich selbst, sobald es eine neue Fassung gibt.</p>
+      <section class="block faq" aria-labelledby="faq-title">
+        <h2 id="faq-title">Gut zu wissen</h2>
+        <details>
+          <summary>Was kostet James?</summary>
+          <p>Nichts. Für die Antworten braucht James einen KI-Zugang: einen kostenlosen Gemini-Schlüssel von Google oder ein eigenes OpenAI-Konto. Am PC geht auch ein ChatGPT-Abo oder ein lokales Modell.</p>
+        </details>
+        <details>
+          <summary>Warum nicht aus dem App Store?</summary>
+          <p>Für den App Store braucht es ein Apple-Entwicklerkonto und eine Prüfung durch Apple. James ist hier eine Web-App: Sie startet wie eine App, im Vollbild, mit eigenem Symbol, und aktualisiert sich selbst, sobald es eine neue Fassung gibt.</p>
+        </details>
+        <details>
+          <summary>Windows warnt beim Installer</summary>
+          <p>Der Installer ist noch nicht signiert, deshalb meldet Windows „Der Computer wurde durch Windows geschützt“. <strong>Weitere Informationen</strong> → <strong>Trotzdem ausführen</strong>. Die Datei kommt direkt aus den öffentlichen GitHub-Releases.</p>
+        </details>
+        <details>
+          <summary>Wo liegen meine Daten?</summary>
+          <p>Auf deinem Gerät. Gesendet wird nur an den KI-Anbieter, den du wählst, und an offene Dienste wie Wetter und Wikipedia. Mehr in der <a href="../datenschutz/">Datenschutzerklärung</a>.</p>
+        </details>
+        <details>
+          <summary>iPhone und PC zusammen benutzen</summary>
+          <p>Beide installieren, dann am PC unter Einstellungen → Telefon den QR-Code „Mit der James-App koppeln“ mit dem iPhone scannen. Danach oben in der iPhone-App auf „PC“ umschalten.</p>
+        </details>
       </section>
     </main>
 
     <footer class="footer">
       <span>James · Alle Rechte vorbehalten</span>
-      <nav aria-label="Rechtliches"><a href="../datenschutz/">Datenschutz</a></nav>
+      <nav aria-label="Rechtliches"><a href="../store/">Store</a><a href="../datenschutz/">Datenschutz</a></nav>
     </footer>
     <script type="module" src="/src/site/install.ts"></script>
   </body>

@@ -32,6 +32,7 @@
         <h2 class="row-title">Alle Apps</h2>
         <div class="rail" id="apps-rail"></div>
         <h2 class="row-title">Fähigkeiten für James <span>kostenlos</span></h2>
+        <div class="filters" id="skill-filter" role="group" aria-label="Kategorie"></div>
         <div class="rail" id="skills-rail"></div>
         <h2 class="row-title">Neu im Store</h2>
         <ol class="news" id="news"></ol>
@@ -75,7 +76,12 @@
         <div class="detail-actions" id="detail-actions"></div>
         <div id="detail-qr" class="store-qr" hidden><div id="app-qr" role="img" aria-label="QR-Code zum Öffnen auf dem iPhone"></div><p>Mit der iPhone-Kamera scannen</p></div>
         <p id="detail-status" role="status"></p>
+        <p class="hint" id="detail-hint" hidden></p>
         <p class="detail-text" id="detail-text"></p>
+        <div class="examples-block" id="detail-examples-block" hidden>
+          <h2>Sag zum Beispiel</h2>
+          <ul class="examples" id="detail-examples"></ul>
+        </div>
         <dl class="facts" id="detail-facts"></dl>
       </div>
     </dialog>

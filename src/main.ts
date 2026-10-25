@@ -438,6 +438,8 @@ $('open-settings').addEventListener('click', openSettings)
 
 // Der Systemprompt wird vor jeder Frage neu gebaut; Änderungen wirken also sofort.
 const market = setupMarket({ onChanged: () => renderChips() })
+// „Installiere den Kochassistenten“ – das Werkzeug meldet sich hier.
+window.addEventListener('james:skills', () => renderChips())
 $('open-market').addEventListener('click', () => market.open())
 // Installierte Fähigkeiten auch ohne Öffnen des Marktplatzes aktuell halten.
 void market.refresh()

@@ -10,3 +10,14 @@ export function installationTarget(base: string, search: string) {
     guide: new URL(`installieren/${store ? '?target=store' : ''}`, root).href
   }
 }
+
+/**
+ * Netlify spiegelt GitHub Pages nur. Installiert und verlinkt wird immer die
+ * GitHub-Pages-Adresse: Speicher (Schlüssel, Verlauf, Fähigkeiten) hängt an
+ * der Adresse, und das Profil legt ohnehin diese auf den Home-Bildschirm.
+ */
+export const APP_HOME = 'https://nivarro-boop.github.io/jarvis-iphone/'
+
+export function appRootFor(page: { origin: string; hostname: string }, base: string): string {
+  return page.hostname.endsWith('netlify.app') ? APP_HOME : new URL(base, page.origin).href
+}

@@ -159,13 +159,36 @@ h2 { margin: 0; font-size: 28px; letter-spacing: -0.02em; }
 .button.wide { width: 100%; margin-top: 16px; min-height: 52px; font-size: 17px; }
 .button.big { min-height: 60px; font-size: 20px; margin: 0 0 20px; }
 .linkish { border: 0; background: none; color: var(--accent-2); font: inherit; text-decoration: underline; cursor: pointer; padding: 0; }
-.steps.desktop { display: grid; grid-template-columns: auto 1fr; gap: 32px; align-items: start; }
-.steps.desktop h2 { font-size: 20px; margin: 0 0 6px; }
-.steps.desktop p { color: var(--dim); margin: 0 0 18px; }
-.qr.big { position: static; width: 220px; }
-.qr.big svg { width: 190px; height: 190px; }
-.why { margin-top: 32px; }
-.why p { color: var(--dim); }
+
+/* Alle Geräte auf einen Blick; das eigene steht oben und leuchtet. */
+.platforms { display: grid; gap: 14px; margin-bottom: 28px; }
+.platform {
+  position: relative; display: grid; grid-template-columns: 56px 1fr; gap: 6px 16px; align-items: start;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px;
+}
+.platform > img { border-radius: 13px; }
+.platform h2 { font-size: 21px; margin: 0 0 4px; }
+.platform-text p { margin: 0; color: var(--dim); font-size: 15px; }
+.platform-text .meta { margin-top: 6px; font-size: 13px; color: #7d8ea4; }
+.platform-actions { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+.platform .fine { grid-column: 1 / -1; margin: 6px 0 0; font-size: 13px; }
+.platform .qr.small { position: static; grid-column: 1 / -1; width: auto; grid-template-columns: auto 1fr; align-items: center; justify-items: start; box-shadow: none; background: var(--surface-2); margin-top: 10px; }
+.platform .qr.small svg { width: 110px; height: 110px; }
+.platform .qr.small figcaption { font-size: 14px; text-align: left; }
+.badge { display: none; position: absolute; top: 14px; right: 14px; font-size: 12px; font-weight: 700; color: #04101f; background: var(--accent-2); border-radius: 999px; padding: 3px 10px; }
+.platform.recommended { border-color: #4aa8ff88; box-shadow: 0 0 0 3px #4aa8ff22, 0 20px 50px rgba(0, 0, 0, 0.35); }
+.platform.recommended .badge { display: block; }
+.steps-title { font-size: 22px; margin: 8px 0 14px; }
+#iphone { scroll-margin-top: 72px; }
+.faq details { border-bottom: 1px solid var(--line); padding: 14px 0; }
+.faq summary { cursor: pointer; font-weight: 600; font-size: 17px; }
+.faq details p { color: var(--dim); margin: 10px 0 0; }
+.faq h2 { margin-bottom: 8px; }
+
+@media (max-width: 420px) {
+  .badge { position: static; justify-self: start; grid-column: 1 / -1; }
+  .platform-actions .button { flex: 1 1 auto; }
+}
 
 /* ── Textseiten (Datenschutz) ───────────── */
 
@@ -191,7 +214,6 @@ h2 { margin: 0; font-size: 28px; letter-spacing: -0.02em; }
   .qr { display: none; }
   .nav nav a:not([href^='#']) { display: none; }
   .timeline li { grid-template-columns: 1fr; gap: 2px; }
-  .steps.desktop { grid-template-columns: 1fr; justify-items: center; }
 }
 
 @media (prefers-reduced-motion: reduce) {

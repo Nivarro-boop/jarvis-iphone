@@ -1,6 +1,7 @@
 import { fetchCatalog, type AppEntry, type Catalog, type Skill } from '../market/catalog'
 import { latestRelease } from '../market/releases'
 import { fetchRemote } from '../update'
+import { appRootFor } from '../market/installation'
 import { renderQr } from '../site/qr'
 import './store.css'
 
@@ -8,14 +9,15 @@ import './store.css'
  * James Store — ein Store wie Epic oder der App Store, nur ohne App Store.
  *
  * Web-Apps öffnen eine Anleitung zum Home-Bildschirm; Profile sind optional.
- * Für Windows öffnet der Store den neuesten
- * Installer aus den GitHub-Releases; für die Apple Watch die Anleitung zum
- * Siri-Kurzbefehl. Katalog und Versionen kommen live aus GitHub.
+ * Für Windows öffnet der Store den neuesten Installer aus den GitHub-Releases;
+ * für die Apple Watch die Anleitung zum Siri-Kurzbefehl. Katalog und
+ * Versionen kommen live aus GitHub.
  */
 
 const base = import.meta.env.BASE_URL
 const appRoot = new URL(base, location.origin).href
-/** Profile nur von Netlify: GitHub Pages liefert sie mit falschem Dateityp aus. */
+/** Links in die App gehen immer an die Adresse, die auch installiert wird. */
+const appHome = appRootFor(location, base)
 const LIBRARY = 'james.store.library'
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T
@@ -35,6 +37,8 @@ const standalone = matchMedia('(display-mode: standalone)').matches || (navigato
 let catalog: Catalog = { updated: '', skills: [], apps: [] }
 /** Live-Versionen, sobald bekannt. */
 const versions = new Map<string, string>()
+/** Gewählte Kategorie der Fähigkeiten auf „Entdecken“; leer = alle. */
+let category = ''
 
 // ─────────────────────────────────────────────────────────────
 // Bibliothek: was hier geholt wurde
@@ -83,7 +87,7 @@ function actionsFor(app: AppEntry): Action[] {
   const actions: Action[] = []
   if (app.kind === 'self') {
     actions.push({ label: ios ? 'Zum Home-Bildschirm' : 'Am iPhone einrichten', href: `${appRoot}installieren/`, primary: true })
-    actions.push({ label: 'Im Browser öffnen', href: appRoot })
+    actions.push({ label: 'Im Browser öffnen', href: appHome })
   } else if (app.kind === 'guide' && app.url) {
     actions.push({ label: 'Einrichten', href: `${appRoot}${app.url}`, primary: true })
   } else if (app.repo) {
@@ -98,7 +102,7 @@ function getButton(app: AppEntry, small = false): HTMLElement {
   if (!first) return el('span')
   const owned = library()[app.id]
   const link = el('a', { className: small ? 'get small' : 'get', href: first.href, textContent: owned && app.kind !== 'github-release' ? 'Öffnen' : small && first.label.length > 12 ? 'Holen' : first.label })
-  if (owned && app.kind === 'self') link.href = appRoot
+  if (owned && app.kind === 'self') link.href = appHome
   link.addEventListener('click', event => {
     event.stopPropagation()
     addToLibrary(app.id)
@@ -106,11 +110,43 @@ function getButton(app: AppEntry, small = false): HTMLElement {
   return link
 }
 
+const skillLink = (skill: Skill) => `${appHome}#skill=${encodeURIComponent(skill.id)}`
+
+function addButton(skill: Skill): HTMLElement {
+  const link = el('a', { className: 'get small', href: skillLink(skill), textContent: 'Hinzufügen' })
+  link.addEventListener('click', event => event.stopPropagation())
+  return link
+}
+
 // ─────────────────────────────────────────────────────────────
-// Entdecken
+// Bilder: Apps haben Symbole, Fähigkeiten bekommen eines aus Kategorie und Anfangsbuchstabe
 // ─────────────────────────────────────────────────────────────
 
 const iconOf = (app: AppEntry) => `${base}${app.icon ?? 'icons/icon-192.png'}`
+
+/** Gleiche Kategorie, gleiche Farbe — ohne Farbliste im Katalog. */
+function hueOf(text: string): number {
+  let hash = 7
+  for (const char of text) hash = (hash * 31 + char.charCodeAt(0)) % 360
+  return hash
+}
+
+const skillAccent = (skill: Skill) => `hsl(${hueOf(skill.category)} 65% 52%)`
+
+function skillIcon(skill: Skill): string {
+  const hue = hueOf(skill.category)
+  const letter = (skill.name.slice(0, 1) || '?').replace(/[&<>"]/g, c => `&#${c.charCodeAt(0)};`)
+  const svg =
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">` +
+    `<stop offset="0" stop-color="hsl(${hue} 72% 60%)"/><stop offset="1" stop-color="hsl(${(hue + 40) % 360} 60% 30%)"/></linearGradient></defs>` +
+    `<rect width="120" height="120" rx="27" fill="url(#g)"/>` +
+    `<text x="60" y="80" font-family="-apple-system,Segoe UI,sans-serif" font-size="60" font-weight="800" fill="#fff" text-anchor="middle">${letter}</text></svg>`
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`
+}
+
+// ─────────────────────────────────────────────────────────────
+// Entdecken
+// ─────────────────────────────────────────────────────────────
 
 function heroCard(app: AppEntry): HTMLElement {
   const card = el(
@@ -140,22 +176,40 @@ function appTile(app: AppEntry): HTMLElement {
 }
 
 function skillTile(skill: Skill): HTMLElement {
-  const link = el('a', { className: 'get small', href: `${appRoot}#skill=${encodeURIComponent(skill.id)}`, textContent: 'Hinzufügen' })
-  return el(
+  const tile = el(
     'article',
     { className: 'tile skill' },
-    el('div', { className: 'tile-art letter', textContent: skill.name.slice(0, 1) }),
+    el('div', { className: 'tile-art' }, el('img', { src: skillIcon(skill), alt: '' })),
     el('h3', { textContent: skill.name }),
     el('p', { textContent: skill.category }),
-    el('div', { className: 'tile-foot' }, el('span', { className: 'price', textContent: 'für James' }), link)
+    el('div', { className: 'tile-foot' }, el('span', { className: 'price', textContent: 'für James' }), addButton(skill))
   )
+  tile.style.setProperty('--accent', skillAccent(skill))
+  tile.addEventListener('click', () => openSkill(skill))
+  return tile
+}
+
+function renderSkillRail(): void {
+  const categories = [...new Set(catalog.skills.map(s => s.category))]
+  $('skill-filter').replaceChildren(
+    ...['', ...categories].map(name => {
+      const chip = el('button', { type: 'button', className: 'filter', textContent: name || 'Alle' })
+      chip.setAttribute('aria-pressed', String(name === category))
+      chip.addEventListener('click', () => {
+        category = name
+        renderSkillRail()
+      })
+      return chip
+    })
+  )
+  $('skills-rail').replaceChildren(...catalog.skills.filter(s => !category || s.category === category).map(skillTile))
 }
 
 function renderDiscover(): void {
   const featured = catalog.apps.filter(a => a.tagline)
   $('hero').replaceChildren(...featured.map(heroCard))
   $('apps-rail').replaceChildren(...catalog.apps.map(appTile))
-  $('skills-rail').replaceChildren(...catalog.skills.map(skillTile))
+  renderSkillRail()
   $('install-store').hidden = !ios || standalone
 }
 
@@ -170,30 +224,88 @@ async function renderNews(): Promise<void> {
 }
 
 // ─────────────────────────────────────────────────────────────
-// Detailseite
+// Detailseite — für Apps und Fähigkeiten dieselbe
 // ─────────────────────────────────────────────────────────────
 
-let detailRevision = 0
 const detail = $<HTMLDialogElement>('detail')
-detail.addEventListener('close', () => { detailRevision++ })
-$('detail-close').addEventListener('click', () => detail.close())
+/** Späte Antworten (Release-Infos) gehören nur zur Detailseite, die sie angefordert hat. */
+let detailRevision = 0
+detail.addEventListener('close', () => {
+  detailRevision++
+})
+
+/**
+ * Jede Detailseite ist ein Eintrag im Verlauf: Wischen vom Rand und die
+ * Zurück-Taste schließen sie, und der Link lässt sich teilen. Schließen geht
+ * deshalb immer über den Verlauf; popstate macht das Blatt zu.
+ */
+function closeDetail(): void {
+  if ((history.state as { detail?: boolean } | null)?.detail) history.back()
+  else detail.close()
+}
+$('detail-close').addEventListener('click', closeDetail)
+detail.addEventListener('cancel', event => {
+  event.preventDefault()
+  closeDetail()
+})
+window.addEventListener('popstate', () => {
+  if (detail.open) detail.close()
+})
+
+function shareButton(title: string, query: string): HTMLElement {
+  const url = `${location.origin}${location.pathname}?${query}`
+  const button = el('button', { type: 'button', className: 'ghost wide', textContent: 'Teilen' })
+  button.addEventListener('click', async () => {
+    if (navigator.share) {
+      await navigator.share({ title, url }).catch(() => undefined)
+      return
+    }
+    const copied = await navigator.clipboard
+      ?.writeText(url)
+      .then(() => true)
+      .catch(() => false)
+    button.textContent = copied ? 'Link kopiert' : url
+  })
+  return button
+}
+
+function fact(name: string, value: string): Node[] {
+  return [el('dt', { textContent: name }), el('dd', { textContent: value })]
+}
+
+function showDetail(options: { accent: string; icon: string; name: string; tagline: string; chips: string[]; text: string; query: string; qr: string }): void {
+  $('detail-status').textContent = ''
+  // Am Rechner: weiter am iPhone per QR-Code.
+  $('detail-qr').hidden = ios
+  if (!ios) renderQr($('app-qr'), options.qr)
+  $('detail-hero').style.setProperty('--accent', options.accent)
+  $<HTMLImageElement>('detail-icon').src = options.icon
+  $('detail-name').textContent = options.name
+  $('detail-tagline').textContent = options.tagline
+  $('detail-chips').replaceChildren(...options.chips.map(text => el('span', { className: 'chip', textContent: text })))
+  $('detail-text').textContent = options.text
+  $('detail-examples').replaceChildren()
+  $('detail-examples-block').hidden = true
+  $('detail-hint').hidden = true
+  if (!detail.open) {
+    history.pushState({ detail: true }, '', `?${options.query}`)
+    detail.showModal()
+  }
+  detail.scrollTop = 0
+}
 
 function openDetail(app: AppEntry): void {
   const revision = ++detailRevision
-  $('detail-status').textContent = ''
-  $('detail-qr').hidden = ios
-  if (!ios) renderQr($('app-qr'), app.kind === 'guide' ? new URL(app.url!, appRoot).href : `${appRoot}store/?app=${encodeURIComponent(app.id)}`)
-  $('detail-hero').style.setProperty('--accent', app.accent ?? '#2f86ef')
-  $<HTMLImageElement>('detail-icon').src = iconOf(app)
-  $('detail-name').textContent = app.name
-  $('detail-tagline').textContent = app.tagline ?? ''
-  $('detail-chips').replaceChildren(
-    el('span', { className: 'chip', textContent: app.platform }),
-    el('span', { className: 'chip', textContent: app.kind === 'self' ? 'Web-App' : app.kind === 'guide' ? 'Kurzbefehl-Anleitung' : 'Windows-Installer' }),
-    el('span', { className: 'chip', textContent: 'Kostenlos' }),
-    ...(app.watch ? [el('span', { className: 'chip', textContent: 'Apple Watch' })] : [])
-  )
-  $('detail-text').textContent = app.description
+  showDetail({
+    accent: app.accent ?? '#2f86ef',
+    icon: iconOf(app),
+    name: app.name,
+    tagline: app.tagline ?? '',
+    chips: [app.platform, app.kind === 'self' ? 'Web-App' : app.kind === 'guide' ? 'Kurzbefehl-Anleitung' : 'Windows-Installer', 'Kostenlos', ...(app.watch ? ['Apple Watch'] : [])],
+    text: app.description,
+    query: `app=${encodeURIComponent(app.id)}`,
+    qr: app.kind === 'guide' && app.url ? new URL(app.url, appRoot).href : `${appRoot}store/?app=${encodeURIComponent(app.id)}`
+  })
   $('detail-actions').replaceChildren(
     ...actionsFor(app).map(action => {
       const link = el('a', {
@@ -206,35 +318,56 @@ function openDetail(app: AppEntry): void {
         if (action.primary) addToLibrary(app.id)
       })
       return link
-    })
+    }),
+    shareButton(app.name, `app=${encodeURIComponent(app.id)}`)
   )
   const facts = $('detail-facts')
-  facts.replaceChildren(el('dt', { textContent: 'Preis' }), el('dd', { textContent: 'Kostenlos' }), el('dt', { textContent: 'Plattform' }), el('dd', { textContent: app.platform }))
+  facts.replaceChildren(...fact('Preis', 'Kostenlos'), ...fact('Plattform', app.platform))
   const known = versions.get(app.id)
-  if (known) facts.append(el('dt', { textContent: 'Version' }), el('dd', { textContent: known }))
+  if (known) facts.append(...fact('Version', known))
   if (app.repo && !known) {
     void latestRelease(app.repo, app.asset)
       .then(release => {
         versions.set(app.id, release.version)
         if (revision !== detailRevision || !detail.open) return
-        facts.append(el('dt', { textContent: 'Version' }), el('dd', { textContent: `${release.version} · ${dateDe(release.date)}` }))
-        if (release.sizeMb) facts.append(el('dt', { textContent: 'Größe' }), el('dd', { textContent: `${release.sizeMb} MB` }))
+        facts.append(...fact('Version', `${release.version} · ${dateDe(release.date)}`))
+        if (release.sizeMb) facts.append(...fact('Größe', `${release.sizeMb} MB`))
         const primary = $('detail-actions').querySelector<HTMLAnchorElement>('.get')
         if (primary) primary.href = release.url
       })
       .catch(() => undefined)
   }
-  detail.showModal()
-  detail.scrollTop = 0
+}
+
+function openSkill(skill: Skill): void {
+  detailRevision++
+  showDetail({
+    accent: skillAccent(skill),
+    icon: skillIcon(skill),
+    name: skill.name,
+    tagline: skill.category,
+    chips: ['Fähigkeit', 'Kostenlos', `v${skill.version}`],
+    text: skill.description,
+    query: `skill=${encodeURIComponent(skill.id)}`,
+    qr: `${appRoot}store/?skill=${encodeURIComponent(skill.id)}`
+  })
+  if (skill.examples.length) {
+    $('detail-examples').replaceChildren(...skill.examples.map(e => el('li', { textContent: e })))
+    $('detail-examples-block').hidden = false
+  }
+  const add = el('a', { className: 'get wide', href: skillLink(skill), textContent: 'Zu James hinzufügen' })
+  $('detail-actions').replaceChildren(add, shareButton(skill.name, `skill=${encodeURIComponent(skill.id)}`))
+  $('detail-hint').textContent = `Oder in James einfach sagen: „Installiere ${skill.name}“.`
+  $('detail-hint').hidden = false
+  $('detail-facts').replaceChildren(...fact('Preis', 'Kostenlos'), ...fact('Kategorie', skill.category), ...fact('Version', skill.version), ...fact('Von', skill.author))
 }
 
 // ─────────────────────────────────────────────────────────────
 // Suche und Bibliothek
 // ─────────────────────────────────────────────────────────────
 
-function row(title: string, subtitle: string, icon: string | null, action: HTMLElement, onOpen?: () => void): HTMLElement {
-  const art = icon ? el('img', { src: icon, alt: '' }) : el('div', { className: 'letter', textContent: title.slice(0, 1) })
-  const item = el('article', { className: 'row' }, el('div', { className: 'row-art' }, art), el('div', { className: 'row-text' }, el('h3', { textContent: title }), el('p', { textContent: subtitle })), action)
+function row(title: string, subtitle: string, icon: string, action: HTMLElement, onOpen?: () => void): HTMLElement {
+  const item = el('article', { className: 'row' }, el('div', { className: 'row-art' }, el('img', { src: icon, alt: '' })), el('div', { className: 'row-text' }, el('h3', { textContent: title }), el('p', { textContent: subtitle })), action)
   if (onOpen) item.addEventListener('click', onOpen)
   return item
 }
@@ -246,11 +379,12 @@ function renderSearch(): void {
   const skills = catalog.skills.filter(s => match(s.name, s.category, s.description, ...s.examples))
   $('search-results').replaceChildren(
     ...apps.map(a => row(a.name, a.platform, iconOf(a), getButton(a, true), () => openDetail(a))),
-    ...skills.map(s =>
-      row(s.name, `Fähigkeit · ${s.category}`, null, el('a', { className: 'get small', href: `${appRoot}#skill=${encodeURIComponent(s.id)}`, textContent: 'Hinzufügen' }))
-    )
+    ...skills.map(s => row(s.name, `Fähigkeit · ${s.category}`, skillIcon(s), addButton(s), () => openSkill(s)))
   )
-  if (!apps.length && !skills.length) $('search-results').append(el('p', { className: 'empty', textContent: 'Nichts gefunden. Versuche iPhone, Watch oder eine Fähigkeit.' }))
+  if (!apps.length && !skills.length) {
+    const suggest = el('a', { href: 'https://github.com/Nivarro-boop/jarvis-iphone/issues/new?template=faehigkeit.yml', target: '_blank', rel: 'noopener', textContent: 'vorschlagen' })
+    $('search-results').append(el('p', { className: 'empty' }, 'Nichts gefunden. Versuche iPhone, Watch oder eine Fähigkeit – oder eine neue ', suggest, '.'))
+  }
 }
 $('search').addEventListener('input', renderSearch)
 
@@ -293,17 +427,29 @@ function show(view: string): void {
 }
 for (const tab of tabs) tab.addEventListener('click', () => show(tab.dataset.view ?? 'discover'))
 
-fetchCatalog(base)
-  .then(result => {
-    catalog = result
-    renderDiscover()
-    const wanted = new URLSearchParams(location.search).get('app')
-    const app = wanted && catalog.apps.find(a => a.id === wanted)
-    if (app) openDetail(app)
-  })
-  .catch(error => {
-    $('hero').replaceChildren(el('p', { className: 'empty', textContent: error instanceof Error ? error.message : String(error) }))
-  })
+function load(): void {
+  $('hero').replaceChildren(el('div', { className: 'hero-card skeleton' }))
+  fetchCatalog(base)
+    .then(result => {
+      catalog = result
+      renderDiscover()
+      // Geteilte Links: ?app=james-windows oder ?skill=koch
+      const params = new URLSearchParams(location.search)
+      const app = catalog.apps.find(a => a.id === params.get('app'))
+      const skill = catalog.skills.find(s => s.id === params.get('skill'))
+      if (app || skill) history.replaceState(null, '', location.pathname)
+      if (app) openDetail(app)
+      else if (skill) openSkill(skill)
+    })
+    .catch(error => {
+      const retry = el('button', { type: 'button', className: 'get', textContent: 'Nochmal versuchen' })
+      retry.addEventListener('click', load)
+      $('hero').replaceChildren(
+        el('div', { className: 'offline' }, el('strong', { textContent: 'Store gerade nicht erreichbar' }), el('p', { textContent: error instanceof Error ? error.message : String(error) }), retry)
+      )
+    })
+}
+load()
 void renderNews()
 
 if ('serviceWorker' in navigator && import.meta.env.PROD) {

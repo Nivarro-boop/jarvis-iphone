@@ -3,6 +3,8 @@ import { forget, remember } from '../store'
 import { clientId, signedInOnce, validClientId } from '../google/auth'
 import { createEvent, listEvents } from '../google/calendar'
 import { readMail, searchMail, sendMail } from '../google/gmail'
+import { fetchCatalog } from '../market/catalog'
+import { findSkill, install, loadInstalled, uninstall } from '../market/installed'
 import { currentPosition, geocode, weather } from './weather'
 import { wikipedia } from './wikipedia'
 
@@ -94,6 +96,45 @@ const TOOLS: Tool[] = [
       if (!Number.isFinite(seconds) || seconds < 1 || seconds > 24 * 3600) return { fehler: 'Ungültige Dauer.' }
       startTimer(seconds, text(args.bezeichnung) || 'Timer')
       return { ok: true, hinweis: 'Läuft nur, solange die App offen bleibt.' }
+    }
+  },
+  {
+    spec: {
+      name: 'faehigkeit',
+      description:
+        'Fähigkeiten aus dem James Store (z. B. Kochassistent, Englisch-Trainer, Quizmaster) installieren oder entfernen. Ohne Namen: zeigt, was es gibt und was installiert ist.',
+      parameters: {
+        type: 'object',
+        properties: {
+          name: { type: 'string', description: 'Name der Fähigkeit, optional' },
+          aktion: { type: 'string', enum: ['installieren', 'entfernen'], description: 'Standard: installieren' }
+        }
+      }
+    },
+    busy: 'schaut in den Store',
+    async run(args, { signal }) {
+      const catalog = await fetchCatalog(import.meta.env.BASE_URL, signal).catch(() => null)
+      const installed = loadInstalled()
+      const name = text(args.name)
+      if (!name) {
+        return {
+          installiert: installed.map(s => s.name),
+          verfuegbar: (catalog?.skills ?? []).filter(s => !installed.some(i => i.id === s.id)).map(s => `${s.name}: ${s.description}`)
+        }
+      }
+      const removing = text(args.aktion) === 'entfernen'
+      const skill = findSkill(removing ? installed : (catalog?.skills ?? []), name)
+      if (!skill) {
+        if (removing) return { fehler: `${name} ist nicht installiert.` }
+        return { fehler: catalog ? `Im Store gibt es keine Fähigkeit „${name}“.` : 'Der Store ist gerade nicht erreichbar.' }
+      }
+      if (removing) uninstall(skill.id)
+      else {
+        const result = install(skill)
+        if (!result.ok) return { fehler: result.error }
+      }
+      window.dispatchEvent(new Event('james:skills'))
+      return removing ? { entfernt: skill.name } : { installiert: skill.name, beispiele: skill.examples, hinweis: 'Ab der nächsten Frage aktiv.' }
     }
   }
 ]

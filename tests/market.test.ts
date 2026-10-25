@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { compareVersions, parseCatalog, type Skill } from '../src/market/catalog'
-import { install, loadInstalled, MAX_ACTIVE, skillsPrompt, syncWithCatalog, uninstall } from '../src/market/installed'
+import { findSkill, install, loadInstalled, MAX_ACTIVE, skillsPrompt, syncWithCatalog, uninstall } from '../src/market/installed'
 import { isNewer } from '../src/update'
 
 const skill = (id: string, version = '1.0.0'): Skill => ({
@@ -72,5 +72,23 @@ describe('Selbst-Update', () => {
   })
   it('aktualisiert lokale Entwicklungsfassungen nicht', () => {
     expect(isNewer({ ...local, sha: 'bbbbbbb' }, { ...local, sha: 'lokal' })).toBe(false)
+  })
+})
+
+describe('Fähigkeit per Sprache finden', () => {
+  const raw = JSON.parse(readFileSync(resolve('public/marketplace.json'), 'utf8'))
+  const { skills } = parseCatalog(raw)
+
+  it('versteht gebeugte und kurze Namen', () => {
+    expect(findSkill(skills, 'den Kochassistenten')?.id).toBe('koch')
+    expect(findSkill(skills, 'Englisch')?.id).toBe('englisch')
+    expect(findSkill(skills, 'quizmaster')?.id).toBe('quiz')
+    expect(findSkill(skills, 'Gute-Nacht-Geschichte')?.id).toBe('geschichten')
+    expect(findSkill(skills, 'Fokus Coach')?.id).toBe('fokus')
+  })
+
+  it('erfindet keine Treffer', () => {
+    expect(findSkill(skills, 'Steuerberater')).toBeUndefined()
+    expect(findSkill(skills, '')).toBeUndefined()
   })
 })
