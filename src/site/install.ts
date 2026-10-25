@@ -21,10 +21,12 @@ const standalone = matchMedia('(display-mode: standalone)').matches || (navigato
 const target = installationTarget(appRootFor(location, import.meta.env.BASE_URL), location.search)
 for (const link of document.querySelectorAll<HTMLAnchorElement>('[data-app-link]')) link.href = target.url
 ;($('profile-download') as HTMLAnchorElement).href = target.profile
-$('show-profile').addEventListener('click', () => {
-  $('ios-profile').hidden = false
-  $('show-profile').hidden = true
+$('show-manual').addEventListener('click', () => {
+  $('ios-safari').hidden = false
+  $('show-manual').hidden = true
 })
+/** Öffnet eine Adresse in Safari (iOS 17 und neuer), auch aus Chrome oder der Google-App. */
+const inSafari = (url: string) => `x-safari-${url}`
 
 // Nur der Store: Windows und Uhr gehören hier nicht dazu.
 if (target.name !== 'James') {
@@ -34,7 +36,7 @@ if (target.name !== 'James') {
   $('install-lead').textContent = 'Den Web-Store als eigenes Symbol auf den Home-Bildschirm legen.'
   $('iphone-name').textContent = target.name
   $('iphone-text').textContent = 'Apps und Fähigkeiten für James, wie im App Store – als Web-App.'
-  $('ios-steps-title').textContent = `${target.name} in drei Tipps`
+  $('ios-steps-title').textContent = `${target.name} installieren`
   $('p-windows').hidden = true
   $('p-watch').hidden = true
 }
@@ -48,13 +50,21 @@ function recommend(id: string): void {
 if (ios) {
   recommend('p-iphone')
   $('windows-elsewhere').hidden = false
+  const get = $('iphone-get') as HTMLAnchorElement
   if (standalone) {
     $('install-lead').textContent = 'Du hast die Anleitung im Vollbild geöffnet. Ob das App-Symbol bereits hinzugefügt wurde, kann diese Seite nicht feststellen.'
-    $('ios-safari').hidden = false
+    $('ios-profile').hidden = false
   } else if (safari) {
-    $('ios-safari').hidden = false
+    // Ein Knopf: Profil laden, dann in iOS bestätigen.
+    $('ios-profile').hidden = false
+    get.textContent = 'Installieren'
+    get.href = target.profile
   } else {
     $('ios-other').hidden = false
+    const open = $('open-safari') as HTMLAnchorElement
+    open.href = inSafari(target.guide)
+    get.textContent = 'In Safari installieren'
+    get.href = open.href
     $('copy-link').addEventListener('click', async () => {
       try {
         await navigator.clipboard.writeText(target.guide)

@@ -86,7 +86,7 @@ interface Action {
 function actionsFor(app: AppEntry): Action[] {
   const actions: Action[] = []
   if (app.kind === 'self') {
-    actions.push({ label: ios ? 'Zum Home-Bildschirm' : 'Am iPhone einrichten', href: `${appRoot}installieren/`, primary: true })
+    actions.push({ label: ios ? 'Installieren' : 'Am iPhone einrichten', href: `${appRoot}installieren/`, primary: true })
     actions.push({ label: 'Im Browser öffnen', href: appHome })
   } else if (app.kind === 'guide' && app.url) {
     actions.push({ label: 'Einrichten', href: `${appRoot}${app.url}`, primary: true })

@@ -83,9 +83,21 @@
       </section>
 
       <div id="iphone">
-        <!-- iPhone in Safari: Teilen → Zum Home-Bildschirm. Das ist der Standardweg. -->
+        <!-- iPhone in Safari: ein Knopf, dann zwei Bestätigungen in iOS. -->
+        <section class="steps oneTap" id="ios-profile" hidden>
+          <h2 class="steps-title" id="ios-steps-title">James installieren</h2>
+          <!-- Von Netlify: Nur dort kommt das Profil mit dem Dateityp, den iOS zum Installieren braucht. -->
+          <a id="profile-download" class="button primary wide big" href="https://james-marktplatz.netlify.app/jarvis-iphone/james.mobileconfig">Installieren</a>
+            <li><span class="num">1</span><div><strong>Erlauben</strong><br /><small>Safari fragt, ob das Profil geladen werden darf</small></div><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg></li>
+            <li><span class="num">2</span><div><strong>Einstellungen</strong> öffnen → oben <strong>Profil geladen</strong><br /><small>„Nicht signiert“ ist bei eigenen Profilen normal</small></div><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2" /><path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7" /></svg></li>
+            <li><span class="num">3</span><div><strong>Installieren</strong> – fertig<br /><small>James liegt auf dem Home-Bildschirm und startet wie eine App</small></div><img src="../icons/icon-192.png" alt="" width="28" height="28" /></li>
+          <p class="fine">Legt James als Web-App mit eigenem Symbol auf den Home-Bildschirm – keine App aus dem App Store. Das Profil enthält nur Symbol und Adresse. Entfernen: Einstellungen → Allgemein → VPN und Geräteverwaltung.</p>
+          <p class="fine"><button class="linkish" id="show-manual" type="button">Ohne Profil: über Teilen → Zum Home-Bildschirm</button></p>
+        </section>
+
+        <!-- Ohne Profil: Teilen → Zum Home-Bildschirm -->
         <section class="steps" id="ios-safari" hidden>
-          <h2 class="steps-title" id="ios-steps-title">Aufs iPhone in drei Tipps</h2>
+          <h2 class="steps-title">Ohne Profil</h2>
           <ol>
             <li><span class="num">1</span><div><strong>Web-App öffnen</strong><br /><small>mit dem Knopf unten – dort weitermachen</small></div><img src="../icons/icon-192.png" alt="" width="28" height="28" /></li>
             <li><span class="num">2</span><div><strong>Teilen</strong> antippen<br /><small>das Quadrat mit dem Pfeil, unten in der Leiste</small></div><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3M7.5 7.5L12 3l4.5 4.5M6 11H5v10h14V11h-1" /></svg></li>
@@ -93,27 +105,14 @@
           </ol>
           <a class="button primary wide" data-app-link href="../">Web-App öffnen</a>
           <p class="fine">Wichtig: erst in der Web-App die Schritte 2 und 3 machen, nicht auf dieser Seite – sonst landet nur diese Anleitung auf dem Home-Bildschirm.</p>
-          <p class="fine"><button class="linkish" id="show-profile" type="button">Alternativ: Web-Clip-Profil verwenden</button></p>
         </section>
 
-        <!-- Optional: Symbol über ein Profil -->
-        <section class="steps oneTap" id="ios-profile" hidden>
-          <h2 class="steps-title">Optional: Symbol über ein Profil hinzufügen</h2>
-          <p class="fine">Dieses Profil fügt eine Website-Verknüpfung hinzu. Es installiert keine native App und schaltet keine Watch-App frei.</p>
-          <!-- Von Netlify: Nur dort kommt das Profil mit dem Dateityp, den iOS zum Installieren braucht. -->
-          <a id="profile-download" class="button primary wide big" href="https://james-marktplatz.netlify.app/jarvis-iphone/james.mobileconfig">Web-Clip-Profil laden</a>
-          <ol>
-            <li><span class="num">1</span><div><strong>Erlauben</strong><br /><small>Safari fragt, ob das Profil geladen werden darf</small></div><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg></li>
-            <li><span class="num">2</span><div><strong>Einstellungen</strong> öffnen → oben <strong>Profil geladen</strong><br /><small>„Nicht signiert“ ist bei eigenen Profilen normal</small></div><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2" /><path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7" /></svg></li>
-            <li><span class="num">3</span><div><strong>Installieren</strong> – fertig<br /><small>James liegt auf dem Home-Bildschirm und startet wie eine App</small></div><img src="../icons/icon-192.png" alt="" width="28" height="28" /></li>
-          </ol>
-          <p class="fine">Das Profil enthält nur Symbol und Adresse, sonst nichts. Entfernen: Einstellungen → Allgemein → VPN und Geräteverwaltung.</p>
-        </section>
-
-        <!-- iPhone, aber nicht in Safari -->
+        <!-- iPhone, aber nicht in Safari: Installieren geht nur dort, also mit einem Tipp hinüber. -->
         <section class="steps" id="ios-other" hidden>
-          <p class="lead">Bitte diese Seite in <strong>Safari</strong> öffnen. Dort findest du den Weg über „Teilen“ und „Zum Home-Bildschirm“.</p>
-          <button class="button primary" id="copy-link" type="button">Link kopieren</button>
+          <h2 class="steps-title">James installieren</h2>
+          <a id="open-safari" class="button primary wide big" href="#">In Safari installieren</a>
+          <p class="fine">Installieren kann nur Safari. Der Knopf öffnet diese Seite dort; dann auf <strong>Installieren</strong> tippen.</p>
+          <p class="fine"><button class="linkish" id="copy-link" type="button">Klappt nicht? Link kopieren und in Safari einfügen</button></p>
         </section>
       </div>
 
